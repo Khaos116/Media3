@@ -7,10 +7,12 @@ import android.widget.ImageView
 import androidx.fragment.app.FragmentActivity
 import com.cc.media3.databinding.AcMainBinding
 import com.shuyu.gsyvideoplayer.GSYVideoManager
+import com.shuyu.gsyvideoplayer.cache.CacheFactory
 import com.shuyu.gsyvideoplayer.player.PlayerFactory
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
 import tv.danmaku.ijk.media.exo2.Exo2PlayerManager
+import tv.danmaku.ijk.media.exo2.ExoPlayerCacheManager
 import kotlin.system.exitProcess
 
 class MainActivity : FragmentActivity() {
@@ -27,6 +29,7 @@ class MainActivity : FragmentActivity() {
     setContentView(binding.root)
     //EXOPlayer内核，支持格式更多
     PlayerFactory.setPlayManager(Exo2PlayerManager::class.java)
+    CacheFactory.setCacheManager(ExoPlayerCacheManager::class.java)
     init()
   }
   //</editor-fold>
@@ -45,7 +48,7 @@ class MainActivity : FragmentActivity() {
     mVideoPlayer?.isNeedShowWifiTip = false
     val p = urls[(Math.random() * urls.size).toInt()]
     mVideoPlayer?.let { videoPlayer ->
-      videoPlayer.setUp(p.second, true, p.first)
+      videoPlayer.setUp(p.second, p.first == "普通M3U8视频", p.first)
       //增加封面
       val imageView = ImageView(this)
       imageView.scaleType = ImageView.ScaleType.CENTER_CROP
