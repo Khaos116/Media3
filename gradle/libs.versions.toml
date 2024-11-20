@@ -1,0 +1,14 @@
+[versions]
+agp = "8.5.2"
+kotlin = "1.9.0"
+
+[libraries]
+#https://github.com/CarGuo/GSYVideoPlayer
+third-gsyvideoplayer-java = { group = "com.github.CarGuo.GSYVideoPlayer", name = "gsyvideoplayer-java", version = "v10.0.0" }
+third-gsyvideoplayer-exo2 = { group = "com.github.CarGuo.GSYVideoPlayer", name = "gsyvideoplayer-exo2", version = "v10.0.0" }
+# https://github.com/hsiafan/apk-parser
+classpath-apk-parser = { group = "net.dongliu", name = "apk-parser", version = "2.6.10" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
