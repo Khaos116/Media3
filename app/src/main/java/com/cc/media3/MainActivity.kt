@@ -37,10 +37,18 @@ class MainActivity : FragmentActivity() {
   //<editor-fold defaultstate="collapsed" desc="初始化">
   private val urls = mutableListOf(
     "问题视频推流" to "https://us2.linkvlc.shop/GO2?token=RS13",
-    "RTMP推流" to "rtmp://liteavapp.qcloud.com/live/liteavdemoplayerstreamid",
-    "RTSP推流" to "rtsp://stream.strba.sk:1935/strba/VYHLAD_JAZERO.stream",
-    "M3U8推流" to "http://220.161.87.62:8800/hls/0/index.m3u8",
-    "普通M3U8视频" to "http://devimages.apple.com.edgekey.net/streaming/examples/bipbop_4x3/gear3/prog_index.m3u8",
+    //https://blog.csdn.net/weixin_45728126/article/details/12881309
+    "RTMP推流" to "rtmp://ns8.indexforce.com/home/mystream",
+    //https://github.com/mpromonet/webrtc-streamer/blob/master/config.json
+    "RTSP推流" to "rtsp://211.132.61.124/axis-media/media.amp",
+    //https://github.com/movin2008/ShuiyeVideo/blob/master/app/src/main/assets/tvlive/%E7%9B%B4%E6%92%AD%E4%B8%AD%E5%9B%BD.tv
+    "M3U8推流" to "http://gctxyc.liveplay.myqcloud.com/gc/wgw01_1/index.m3u8",
+    //https://github.com/movin2008/ShuiyeVideo/blob/f7dc0ec72f5dfb7cd66e53594033fff65c68bf98/app/src/main/assets/tvlive/%E6%B8%AF%E6%BE%B3%E5%8F%B0.tv#L4
+    "FLV推流" to "http://zhibo.hkstv.tv/livestream/mutfysrq.flv",
+    //https://yingshi.tv/  [插件:Video DownloadHelper]
+    "普通M3U8视频" to "https://m3u8.hmrvideo.com/play/f09a0503f1cf473c9134f54b0379f8ca.m3u8",
+    //https://www.6huo.com/hd [https://www.yugaopian.cn/]
+    "普通MP4视频" to "https://vod.pipi.cn/fec9203cvodtransbj1251246104/4d6a5a571397757897006080669/v.f42905.mp4",
   )
 
   private fun init() {
@@ -48,7 +56,7 @@ class MainActivity : FragmentActivity() {
     mVideoPlayer?.isNeedShowWifiTip = false
     val p = urls[(Math.random() * urls.size).toInt()]
     mVideoPlayer?.let { videoPlayer ->
-      videoPlayer.setUp(p.second, p.first == "普通M3U8视频", p.first)
+      videoPlayer.setUp(p.second, p.first.startsWith("普通"), p.first)
       //增加封面
       val imageView = ImageView(this)
       imageView.scaleType = ImageView.ScaleType.CENTER_CROP
