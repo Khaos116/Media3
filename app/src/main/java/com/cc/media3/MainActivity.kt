@@ -1,20 +1,29 @@
 package com.cc.media3
 
+import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.util.Base64
 import android.view.View
 import android.widget.ImageView
 import androidx.fragment.app.FragmentActivity
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
+import androidx.media3.datasource.*
+import androidx.media3.exoplayer.dash.DashMediaSource
+import androidx.media3.exoplayer.drm.*
+import androidx.media3.exoplayer.source.MediaSource
 import com.cc.media3.databinding.AcMainBinding
 import com.shuyu.gsyvideoplayer.GSYVideoManager
 import com.shuyu.gsyvideoplayer.cache.CacheFactory
 import com.shuyu.gsyvideoplayer.player.PlayerFactory
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
-import tv.danmaku.ijk.media.exo2.Exo2PlayerManager
-import tv.danmaku.ijk.media.exo2.ExoPlayerCacheManager
+import tv.danmaku.ijk.media.exo2.*
+import java.io.File
 import kotlin.system.exitProcess
 
+//https://www.skylinewebcams.com/zh/webcam/vietnam.html
 class MainActivity : FragmentActivity() {
   //<editor-fold defaultstate="collapsed" desc="变量">
   private lateinit var binding: AcMainBinding
@@ -23,6 +32,7 @@ class MainActivity : FragmentActivity() {
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="onCreate">
+  @SuppressLint("UnsafeOptInUsageError")
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     binding = AcMainBinding.inflate(layoutInflater)
@@ -30,6 +40,19 @@ class MainActivity : FragmentActivity() {
     //EXOPlayer内核，支持格式更多
     PlayerFactory.setPlayManager(Exo2PlayerManager::class.java)
     CacheFactory.setCacheManager(ExoPlayerCacheManager::class.java)
+    ExoSourceManager.setExoMediaSourceInterceptListener(object : ExoMediaSourceInterceptListener {
+      override fun getMediaSource(dataSource: String?, preview: Boolean, cacheEnable: Boolean, isLooping: Boolean, cacheDir: File?): MediaSource? {
+        return if (dataSource?.endsWith(".mpd") == true) dealDrmVideo(dataSource) else null
+      }
+
+      override fun getHttpDataSourceFactory(userAgent: String?, listener: TransferListener?, connectTimeoutMillis: Int, readTimeoutMillis: Int, mapHeadData: MutableMap<String, String>?, allowCrossProtocolRedirects: Boolean): DataSource.Factory? {
+        return null
+      }
+
+      override fun cacheWriteDataSinkFactory(CachePath: String?, url: String?): DataSink.Factory? {
+        return null
+      }
+    })
     init()
   }
   //</editor-fold>
@@ -37,15 +60,16 @@ class MainActivity : FragmentActivity() {
   //<editor-fold defaultstate="collapsed" desc="初始化">
   private val urls = mutableListOf(
     "问题视频推流" to "https://us2.linkvlc.shop/GO2?token=RS13",
-    "RTMP推流" to "rtmp://f13h.mine.nu/sat/tv071",//台视 https://github.com/suxuang/myIPTV/blob/main/ipv6.m3u
-    "RTSP推流" to "rtsp://211.132.61.124/axis-media/media.amp",//日本千叶县旭市 https://github.com/mpromonet/webrtc-streamer/blob/master/config.json
-    "HLS(M3U8)推流" to "http://aktv.top/AKTV/live/aktv/null-3/AKTV.m3u8",//鳳凰中文 https://github.com/tianya7981/tvbox-/blob/main/20241028
-    "FLV推流" to "http://ali.hlspull.yximgs.com/live/awei_cwjd.flv",//重温经典 https://github.com/vbskycn/iptv/blob/master/tv/hd.txt
-    "普通M3U8视频" to "https://m3u8.hmrvideo.com/play/f09a0503f1cf473c9134f54b0379f8ca.m3u8",//https://yingshi.tv/  [插件:Video DownloadHelper]
-    "普通MP4视频" to "https://vod.pipi.cn/fec9203cvodtransbj1251246104/4d6a5a571397757897006080669/v.f42905.mp4",//https://www.6huo.com/hd  [https://www.yugaopian.cn/]
+    "RTMP推流" to "rtmp://f13h.mine.nu/sat/tv071", //台视 https://github.com/suxuang/myIPTV/blob/main/ipv6.m3u
+    "RTSP推流" to "rtsp://211.132.61.124/axis-media/media.amp", //日本千叶县旭市 https://github.com/mpromonet/webrtc-streamer/blob/master/config.json
+    "HLS(M3U8)推流" to "http://aktv.top/AKTV/live/aktv/null-3/AKTV.m3u8", //鳳凰中文 https://github.com/tianya7981/tvbox-/blob/main/20241028
+    "FLV推流" to "http://ali.hlspull.yximgs.com/live/awei_cwjd.flv", //重温经典 https://github.com/vbskycn/iptv/blob/master/tv/hd.txt
+    "普通M3U8视频" to "https://m3u8.hmrvideo.com/play/f09a0503f1cf473c9134f54b0379f8ca.m3u8", //https://yingshi.tv/  [插件:Video DownloadHelper]
+    "普通MP4视频" to "https://vod.pipi.cn/fec9203cvodtransbj1251246104/4d6a5a571397757897006080669/v.f42905.mp4", //https://www.6huo.com/hd  [https://www.yugaopian.cn/]
   )
 
   private fun init() {
+    urls.addAll(mDrmUrlInfo.map { a -> Pair(a.first, a.second) })
     mVideoPlayer = binding.videoPlayer
     mVideoPlayer?.isNeedShowWifiTip = false
     val p = urls[(Math.random() * urls.size).toInt()]
@@ -102,6 +126,49 @@ class MainActivity : FragmentActivity() {
     mVideoPlayer?.setVideoAllCallBack(null)
     finish()
     exitProcess(0)
+  }
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="处理Dash(DRM)直播流">
+  //https://github.com/Mgsportstv/mgsportstv/blob/e5fefa8/Player/mpdmgfoot.html
+  private val mDrmUrlInfo = mutableListOf(
+    Triple("【DRM】SSC1", "https://ssc-1-enc.edgenextcdn.net/out/v1/c696e4819b55414388a1a487e8a45ca1/index.mpd", "d84c325f36814f39bbe59080272b10c3:550727de4c96ef1ecff874905493580f"),
+    Triple("【DRM】CRIC_BUZZ", "https://live2.shoq.com.pk/live/eds/Criclife2/DASH/Criclife2.mpd", "4301796d6d67374043c4a43c18dff7ea:96a3dc8766317aa169149a604928ebb6"),
+  )
+
+  @SuppressLint("UnsafeOptInUsageError")
+  private fun dealDrmVideo(url: String): MediaSource? {
+    mDrmUrlInfo.firstOrNull { t -> t.second == url }?.let { t ->
+      val licenseKey = t.third
+      val drmCallback = if (licenseKey.startsWith("http://") || licenseKey.startsWith("https://")) {
+        HttpMediaDrmCallback(licenseKey, DefaultHttpDataSource.Factory())
+      } else {
+        val licenseParts = licenseKey.split(":")
+        if (licenseParts.size == 2) {
+          val drmKeyId = licenseParts[0]
+          val drmKey = licenseParts[1]
+          val drmKeyBytes = drmKey.chunked(2).map { it.toInt(16).toByte() }.toByteArray()
+          val encodedDrmKey = Base64.encodeToString(drmKeyBytes, Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP)
+          val drmKeyIdBytes = drmKeyId.chunked(2).map { it.toInt(16).toByte() }.toByteArray()
+          val encodedDrmKeyId = Base64.encodeToString(drmKeyIdBytes, Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP)
+          val drmBody = "{\"keys\":[{\"kty\":\"oct\",\"k\":\"${encodedDrmKey}\",\"kid\":\"${encodedDrmKeyId}\"}],\"type\":\"temporary\"}"
+          LocalMediaDrmCallback(drmBody.toByteArray())
+        } else {
+          return null
+        }
+      }
+      return DashMediaSource.Factory(DefaultHttpDataSource.Factory())
+        .setDrmSessionManagerProvider {
+          DefaultDrmSessionManager.Builder()
+            .setPlayClearSamplesWithoutKeys(true)
+            .setMultiSession(false)
+            .setKeyRequestParameters(emptyMap())
+            .setUuidAndExoMediaDrmProvider(C.CLEARKEY_UUID, FrameworkMediaDrm.DEFAULT_PROVIDER)
+            .build(drmCallback)
+        }
+        .createMediaSource(MediaItem.fromUri(t.second))
+    }
+    return null
   }
   //</editor-fold>
 }
