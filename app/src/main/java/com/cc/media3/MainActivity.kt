@@ -17,6 +17,7 @@ import com.cc.media3.databinding.AcMainBinding
 import com.shuyu.gsyvideoplayer.GSYVideoManager
 import com.shuyu.gsyvideoplayer.cache.CacheFactory
 import com.shuyu.gsyvideoplayer.player.PlayerFactory
+import com.shuyu.gsyvideoplayer.utils.GSYVideoType
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
 import tv.danmaku.ijk.media.exo2.*
@@ -45,7 +46,7 @@ class MainActivity : FragmentActivity() {
       )
     )
   )
-  private val urls = mutableListOf(
+  private val mUrls = mutableListOf(
     "问题视频推流" to "https://us2.linkvlc.shop/GO2?token=RS13",
     "RTMP推流" to "rtmp://f13h.mine.nu/sat/tv071", //台视 https://github.com/suxuang/myIPTV/blob/main/ipv6.m3u
     "RTSP推流" to "rtsp://211.132.61.124/axis-media/media.amp", //日本千叶县旭市 https://github.com/mpromonet/webrtc-streamer/blob/master/config.json
@@ -81,6 +82,9 @@ class MainActivity : FragmentActivity() {
         return null
       }
     })
+    GSYVideoType.setRenderType(GSYVideoType.SUFRACE)
+    //GSYVideoType.setRenderType(GSYVideoType.GLSURFACE)
+    //GSYVideoType.setRenderType(GSYVideoType.TEXTURE)//发现https://media.axprod.net/TestVectors/v7-MultiDRM-SingleKey/Manifest_1080p.mpd无画面
     init()
   }
   //</editor-fold>
@@ -89,7 +93,7 @@ class MainActivity : FragmentActivity() {
   private fun init() {
     mVideoPlayer = binding.videoPlayer
     mVideoPlayer?.isNeedShowWifiTip = false
-    val p = urls[(Math.random() * urls.size).toInt()]
+    val p = mUrls[(Math.random() * mUrls.size).toInt()]
     mVideoPlayer?.let { videoPlayer ->
       videoPlayer.setUp(p.second, p.first.startsWith("普通"), p.first)
       mHeaders.firstOrNull { f -> f.first == p.second }?.second?.let { header -> videoPlayer.mapHeadData = header }
