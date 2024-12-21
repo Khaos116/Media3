@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@android:color/black"
+  tools:layout_gravity="center"
+  tools:layout_height="220dp"
+  tools:layout_width="match_parent">
+  <!--播放画面-->
+  <RelativeLayout
+    android:id="@+id/surface_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+
+  </RelativeLayout>
+  <!--封面图-->
+  <RelativeLayout
+    android:id="@+id/thumb"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_alignParentStart="true"
+    android:layout_alignParentTop="true"
+    android:layout_alignParentEnd="true"
+    android:layout_alignParentBottom="true"
+    android:background="#000000"
+    android:scaleType="fitCenter" />
+  <!--底部操作菜单-->
+  <LinearLayout
+    android:id="@+id/layout_bottom"
+    android:layout_width="match_parent"
+    android:layout_height="30dp"
+    android:layout_alignParentBottom="true"
+    android:layout_marginBottom="8dp"
+    android:background="#99000000"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:visibility="invisible"
+    tools:visibility="visible">
+    <!--播放状态按钮-->
+    <ImageView
+      android:id="@+id/start2"
+      android:layout_width="30dp"
+      android:layout_height="30dp"
+      android:layout_gravity="center_vertical"
+      android:layout_marginStart="1dp"
+      android:contentDescription="@null"
+      android:padding="9dp"
+      android:scaleType="fitCenter"
+      android:src="@drawable/svg_player_video_start" />
+    <!--当前播放时间-->
+    <TextView
+      android:id="@+id/current"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="1dp"
+      android:text="00:00"
+      android:textColor="#ffffff"
+      android:textSize="11sp"
+      tools:ignore="HardcodedText" />
+    <!--进度条-->
+    <SeekBar
+      android:id="@+id/progress"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_vertical"
+      android:layout_weight="1.0"
+      android:background="@null"
+      android:max="100"
+      android:maxHeight="4dp"
+      android:minHeight="4dp"
+      android:paddingTop="8dp"
+      android:paddingBottom="8dp"
+      android:progressDrawable="@drawable/my_video_seek_progress"
+      android:thumb="@drawable/my_video_seek_thumb"
+      tools:progress="50"
+      tools:secondaryProgress="80" />
+    <!--视频总时长-->
+    <TextView
+      android:id="@+id/total"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="1dp"
+      android:text="00:00"
+      android:textColor="#ffffff"
+      android:textSize="11sp"
+      tools:ignore="HardcodedText" />
+    <!--全屏按钮-->
+    <ImageView
+      android:id="@+id/fullscreen"
+      android:layout_width="30dp"
+      android:layout_height="30dp"
+      android:layout_marginEnd="1dp"
+      android:contentDescription="@null"
+      android:paddingVertical="9dp"
+      android:scaleType="fitCenter"
+      android:src="@drawable/svg_player_video_full" />
+  </LinearLayout>
+  <!--最底部的进度，隐藏控件时显示-->
+  <ProgressBar
+    android:id="@+id/bottom_progressbar"
+    style="?android:attr/progressBarStyleHorizontal"
+    android:layout_width="match_parent"
+    android:layout_height="1.5dp"
+    android:layout_alignParentBottom="true"
+    android:max="100"
+    android:progressDrawable="@drawable/my_video_progress"
+    tools:progress="50" />
+
+  <ImageView
+    android:id="@+id/back_tiny"
+    android:layout_width="24dp"
+    android:layout_height="24dp"
+    android:layout_marginStart="6dp"
+    android:layout_marginTop="6dp"
+    android:contentDescription="@null"
+    android:visibility="gone"
+    tools:visibility="visible" />
+  <!--顶部返回和标题-->
+  <LinearLayout
+    android:id="@+id/layout_top"
+    android:layout_width="match_parent"
+    android:layout_height="38dp"
+    android:background="@drawable/video_title_bg"
+    android:gravity="center_vertical">
+    <!--返回按钮-->
+    <ImageView
+      android:id="@+id/back"
+      android:layout_width="30dp"
+      android:layout_height="38dp"
+      android:contentDescription="@null"
+      android:paddingVertical="10dp"
+      android:src="@drawable/svg_player_back" />
+    <!--标题-->
+    <TextView
+      android:id="@+id/title"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:contentDescription="@null"
+      android:ellipsize="marquee"
+      android:singleLine="true"
+      android:textColor="@android:color/white"
+      android:textSize="12sp"
+      tools:text="球队A VS 球队B" />
+  </LinearLayout>
+
+  <!--中间loading-->
+  <ProgressBar
+    android:id="@+id/loading"
+    style="?android:attr/progressBarStyleLarge"
+    android:layout_width="30dp"
+    android:layout_height="30dp"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="true"
+    android:visibility="invisible"
+    tools:visibility="visible" />
+  <!--中间开始按钮-->
+  <ImageView
+    android:id="@+id/start"
+    android:layout_width="30dp"
+    android:layout_height="30dp"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="true"
+    android:layout_gravity="center_vertical"
+    android:contentDescription="@null"
+    android:paddingHorizontal="2.5dp"
+    android:scaleType="fitCenter"
+    android:src="@drawable/svg_player_video_start_big" />
+
+  <!--小窗口-关闭按钮-->
+  <ImageView
+    android:id="@+id/small_close"
+    android:layout_width="30dp"
+    android:layout_height="30dp"
+    android:contentDescription="@null"
+    android:paddingStart="10dp"
+    android:paddingTop="10dp"
+    android:paddingEnd="0dp"
+    android:scaleType="centerInside"
+    android:src="@drawable/video_small_close"
+    android:visibility="gone"
+    tools:visibility="gone" />
+  <!--锁住点击-->
+  <ImageView
+    android:id="@+id/lock_screen"
+    android:layout_width="30dp"
+    android:layout_height="30dp"
+    android:layout_alignParentEnd="true"
+    android:layout_centerVertical="true"
+    android:layout_marginEnd="50dp"
+    android:contentDescription="@null"
+    android:padding="3dp"
+    android:scaleType="centerInside"
+    android:src="@drawable/unlock"
+    android:visibility="gone"
+    tools:visibility="visible" />
+</RelativeLayout>

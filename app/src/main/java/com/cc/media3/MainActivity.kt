@@ -1,10 +1,9 @@
 package com.cc.media3
 
 import android.annotation.SuppressLint
-import android.content.pm.ActivityInfo
+import android.content.res.Resources
 import android.os.Bundle
 import android.util.Base64
-import android.view.View
 import android.widget.ImageView
 import androidx.fragment.app.FragmentActivity
 import androidx.media3.common.C
@@ -14,12 +13,9 @@ import androidx.media3.exoplayer.dash.DashMediaSource
 import androidx.media3.exoplayer.drm.*
 import androidx.media3.exoplayer.source.MediaSource
 import com.cc.media3.databinding.AcMainBinding
-import com.shuyu.gsyvideoplayer.GSYVideoManager
 import com.shuyu.gsyvideoplayer.cache.CacheFactory
 import com.shuyu.gsyvideoplayer.player.PlayerFactory
 import com.shuyu.gsyvideoplayer.utils.GSYVideoType
-import com.shuyu.gsyvideoplayer.utils.OrientationUtils
-import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
 import tv.danmaku.ijk.media.exo2.*
 import java.io.File
 import kotlin.system.exitProcess
@@ -28,8 +24,7 @@ import kotlin.system.exitProcess
 class MainActivity : FragmentActivity() {
   //<editor-fold defaultstate="collapsed" desc="变量">
   private lateinit var binding: AcMainBinding
-  private var mVideoPlayer: StandardGSYVideoPlayer? = null
-  private var mOrientationUtils: OrientationUtils? = null
+  private var mVideoPlayer: MyGsyPlayer? = null
 
   //https://github.com/Mgsportstv/mgsportstv/blob/e5fefa8/Player/mpdmgfoot.html
   //https://github.com/Streaming2024/TV
@@ -82,7 +77,9 @@ class MainActivity : FragmentActivity() {
         return null
       }
     })
-    GSYVideoType.setRenderType(GSYVideoType.SUFRACE)
+    GSYVideoType.setShowType(GSYVideoType.SCREEN_TYPE_DEFAULT)//默认显示比例
+    GSYVideoType.setShowType(GSYVideoType.SCREEN_TYPE_FULL)//全屏裁减显示，为了显示正常
+    GSYVideoType.setRenderType(GSYVideoType.SUFRACE)//SurfaceView，动画切换等时候效果比较差
     //GSYVideoType.setRenderType(GSYVideoType.GLSURFACE)
     //GSYVideoType.setRenderType(GSYVideoType.TEXTURE)//发现https://media.axprod.net/TestVectors/v7-MultiDRM-SingleKey/Manifest_1080p.mpd无画面
     init()
@@ -91,63 +88,31 @@ class MainActivity : FragmentActivity() {
 
   //<editor-fold defaultstate="collapsed" desc="初始化">
   private fun init() {
+    binding.rlVideoView.layoutParams.height = (9f / 16 * Resources.getSystem().displayMetrics.widthPixels).toInt()
     mVideoPlayer = binding.videoPlayer
     mVideoPlayer?.isNeedShowWifiTip = false
-    val p = mUrls[(Math.random() * mUrls.size).toInt()]
+    val p = mUrls[7] //mUrls[(Math.random() * mUrls.size).toInt()]
     mVideoPlayer?.let { videoPlayer ->
       videoPlayer.setUp(p.second, p.first.startsWith("普通"), p.first)
       mHeaders.firstOrNull { f -> f.first == p.second }?.second?.let { header -> videoPlayer.mapHeadData = header }
       //增加封面
-      val imageView = ImageView(this)
-      imageView.scaleType = ImageView.ScaleType.CENTER_CROP
-      imageView.setImageResource(R.mipmap.ic_launcher)
-      videoPlayer.thumbImageView = imageView
-      //增加title
-      videoPlayer.titleTextView.visibility = View.VISIBLE
-      //设置返回键
-      videoPlayer.backButton.visibility = View.VISIBLE
-      //设置旋转
-      mOrientationUtils = OrientationUtils(this, videoPlayer)
-      //设置全屏按键功能,这是使用的是旋转屏幕，而不是全屏
-      videoPlayer.fullscreenButton.setOnClickListener { mOrientationUtils?.resolveByClick() }
-      //是否可以滑动调整
-      videoPlayer.setIsTouchWiget(true)
-      //设置返回按键功能
-      videoPlayer.backButton.setOnClickListener { onBackPressed() }
-      ///不需要屏幕旋转
-      videoPlayer.isNeedOrientationUtils = false
+      videoPlayer.thumbImageView = ImageView(this).apply {
+        scaleType = ImageView.ScaleType.CENTER_CROP
+        setImageResource(R.mipmap.ic_launcher)
+      }
       videoPlayer.startPlayLogic()
     }
   }
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="生命周期">
-  override fun onPause() {
-    super.onPause()
-    mVideoPlayer?.onVideoPause()
-  }
-
-  override fun onResume() {
-    super.onResume()
-    mVideoPlayer?.onVideoResume()
-  }
-
-  override fun onDestroy() {
-    super.onDestroy()
-    GSYVideoManager.releaseAllVideos()
-    mOrientationUtils?.releaseListener()
-  }
 
   @Suppress("OVERRIDE_DEPRECATION")
   override fun onBackPressed() {
-    if (mOrientationUtils?.screenType == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-      mVideoPlayer?.fullscreenButton?.performClick()
-      return
-    }
-    //释放所有
-    mVideoPlayer?.setVideoAllCallBack(null)
-    finish()
-    exitProcess(0)
+    if (mVideoPlayer?.onBackPressed() == true) return
+    super.onBackPressed()
+    //finish()
+    //exitProcess(0)
   }
   //</editor-fold>
 
