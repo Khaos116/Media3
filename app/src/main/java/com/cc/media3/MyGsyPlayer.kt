@@ -122,7 +122,7 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
   //<editor-fold defaultstate="collapsed" desc="外部调用控件返回">
   open fun onBackPressed(): Boolean {
     if (mIfCurrentIsFullscreen) {
-      mOrientationUtils?.resolveByClick() //横竖屏切换
+      mFullPlayer?.fullscreenButton?.performClick()
       return true
     }
     return false
