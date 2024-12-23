@@ -30,13 +30,14 @@
   <LinearLayout
     android:id="@+id/layout_bottom"
     android:layout_width="match_parent"
-    android:layout_height="30dp"
+    android:layout_height="36dp"
     android:layout_alignParentBottom="true"
-    android:layout_marginBottom="8dp"
     android:background="#99000000"
     android:gravity="center_vertical"
     android:orientation="horizontal"
+    android:paddingVertical="3dp"
     android:visibility="invisible"
+    tools:background="#2f00FF00"
     tools:visibility="visible">
     <!--播放状态按钮-->
     <ImageView
@@ -153,6 +154,8 @@
     android:layout_height="30dp"
     android:layout_centerHorizontal="true"
     android:layout_centerVertical="true"
+    android:progressTint="#4C9EEA"
+    android:indeterminateTint="#4C9EEA"
     android:visibility="invisible"
     tools:visibility="visible" />
   <!--中间开始按钮-->

@@ -18,7 +18,6 @@ import com.shuyu.gsyvideoplayer.player.PlayerFactory
 import com.shuyu.gsyvideoplayer.utils.GSYVideoType
 import tv.danmaku.ijk.media.exo2.*
 import java.io.File
-import kotlin.system.exitProcess
 
 //https://www.skylinewebcams.com/zh/webcam/vietnam.html
 class MainActivity : FragmentActivity() {
@@ -77,9 +76,9 @@ class MainActivity : FragmentActivity() {
         return null
       }
     })
-    GSYVideoType.setShowType(GSYVideoType.SCREEN_TYPE_DEFAULT)//默认显示比例
-    GSYVideoType.setShowType(GSYVideoType.SCREEN_TYPE_FULL)//全屏裁减显示，为了显示正常
-    GSYVideoType.setRenderType(GSYVideoType.SUFRACE)//SurfaceView，动画切换等时候效果比较差
+    GSYVideoType.setShowType(GSYVideoType.SCREEN_TYPE_DEFAULT) //默认显示比例
+    GSYVideoType.setShowType(GSYVideoType.SCREEN_TYPE_FULL) //全屏裁减显示，为了显示正常
+    GSYVideoType.setRenderType(GSYVideoType.SUFRACE) //SurfaceView，动画切换等时候效果比较差
     //GSYVideoType.setRenderType(GSYVideoType.GLSURFACE)
     //GSYVideoType.setRenderType(GSYVideoType.TEXTURE)//发现https://media.axprod.net/TestVectors/v7-MultiDRM-SingleKey/Manifest_1080p.mpd无画面
     init()
@@ -93,14 +92,20 @@ class MainActivity : FragmentActivity() {
     mVideoPlayer?.isNeedShowWifiTip = false
     val p = mUrls[7] //mUrls[(Math.random() * mUrls.size).toInt()]
     mVideoPlayer?.let { videoPlayer ->
-      videoPlayer.setUp(p.second, p.first.startsWith("普通"), p.first)
-      mHeaders.firstOrNull { f -> f.first == p.second }?.second?.let { header -> videoPlayer.mapHeadData = header }
       //增加封面
       videoPlayer.thumbImageView = ImageView(this).apply {
         scaleType = ImageView.ScaleType.CENTER_CROP
         setImageResource(R.mipmap.ic_launcher)
       }
-      videoPlayer.startPlayLogic()
+      (videoPlayer as? MyGsyVideoPlayer)?.let { player ->
+        player.setUp(p.second, p.first.startsWith("普通"), p.first)
+        mHeaders.firstOrNull { f -> f.first == p.second }?.second?.let { header -> videoPlayer.mapHeadData = header }
+        player.startPlayLogic()
+      }
+      (videoPlayer as? MyGsyLivePlayer)?.let { player ->
+        player.setLinesAndHeader(mUrls.map { a -> a.second }.take(6).toMutableList(), "测试线路切换", hashMapOf())
+        player.playByLineIndex(0)
+      }
     }
   }
   //</editor-fold>

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.*
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
 import com.shuyu.gsyvideoplayer.video.base.GSYVideoPlayer
+import java.io.File
 
 /**
  * Author:XX
@@ -110,7 +111,7 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="外部调用控件返回">
-  fun onBackPressed(): Boolean {
+  open fun onBackPressed(): Boolean {
     if (mIfCurrentIsFullscreen) {
       mOrientationUtils?.resolveByClick() //横竖屏切换
       return true
@@ -123,6 +124,13 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
   protected fun dp2px(dpValue: Float): Int {
     val scale = Resources.getSystem().displayMetrics.density
     return (dpValue * scale + 0.5f).toInt()
+  }
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="打印播放地址">
+  override fun setUp(url: String?, cacheWithPlay: Boolean, cachePath: File?, title: String?, changeState: Boolean): Boolean {
+    "当前播放地址: $url".logE()
+    return super.setUp(url, cacheWithPlay, cachePath, title, changeState)
   }
   //</editor-fold>
 }
