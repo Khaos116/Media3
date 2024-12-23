@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.*
 import androidx.core.view.get
 import androidx.core.view.isVisible
+import com.shuyu.gsyvideoplayer.video.base.GSYBaseVideoPlayer
 
 /**
  * Author:XX
@@ -21,6 +22,7 @@ import androidx.core.view.isVisible
 class MyGsyLivePlayer : MyGsyPlayer {
   //<editor-fold defaultstate="collapsed" desc="多构造">
   constructor(c: Context) : super(c)
+  constructor(c: Context, b: Boolean?) : super(c)
   constructor(c: Context, a: AttributeSet?) : super(c, a)
   //</editor-fold>
 
@@ -78,7 +80,7 @@ class MyGsyLivePlayer : MyGsyPlayer {
       (context as? Activity)?.onBackPressed()
     }
     //线路切换
-    mViewChangeLine = findViewById(R.id.rlLineChange)
+    mViewChangeLine = findViewById(R.id.llLineChange)
     mChangeLineParent = findViewById(R.id.llLine)
     mTvLine1 = findViewById(R.id.tvLine1)
     mTvLine2 = findViewById(R.id.tvLine2)
@@ -95,9 +97,28 @@ class MyGsyLivePlayer : MyGsyPlayer {
     //播放暂停
     mStartButton2 = findViewById(R.id.start2)
     mStartButton2?.setOnClickListener { mStartButton?.performClick() }
-    //</editor-fold>
   }
+  //</editor-fold>
 
+  //<editor-fold defaultstate="collapsed" desc="进入全屏后的处理">
+  override fun dealFullPlayer(player: GSYBaseVideoPlayer) {
+    super.dealFullPlayer(player)
+    (player as? MyGsyLivePlayer)?.let { p ->
+      p.setLinesAndHeader(mUrls, mTitleTextView?.text?.toString(), mHeaders)
+      p.mCurrentLine?.text = this.mCurrentLine?.text ?: "线路1"
+      p.mCurrentLine?.visibility = View.VISIBLE
+      p.mChangeLineParent?.let { pp ->
+        val count = pp.childCount
+        val index = p.mUrls.indexOf(p.mOriginUrl)
+        for (i in 0 until count) {
+          (pp[i] as? TextView)?.setBackgroundResource(if (i == index) R.drawable.shape_half_line_btn_bg_sel else R.drawable.shape_half_line_btn_bg_normal)
+        }
+      }
+    }
+  }
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="全屏按钮">
   override fun getEnlargeImageRes() = R.drawable.svg_player_live_full_enter //全屏按钮
   override fun getShrinkImageRes() = R.drawable.svg_player_live_full_exit //退出全屏按钮
   //</editor-fold>
