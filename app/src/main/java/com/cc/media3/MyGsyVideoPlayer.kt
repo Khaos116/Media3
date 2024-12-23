@@ -14,6 +14,7 @@ import android.widget.ImageView
 class MyGsyVideoPlayer : MyGsyPlayer {
   //<editor-fold defaultstate="collapsed" desc="多构造">
   constructor(c: Context) : super(c)
+  constructor(c: Context, b: Boolean?) : super(c)
   constructor(c: Context, a: AttributeSet?) : super(c, a)
   //</editor-fold>
 
