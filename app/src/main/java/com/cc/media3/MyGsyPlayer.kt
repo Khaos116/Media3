@@ -2,6 +2,7 @@ package com.cc.media3
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.Resources
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
@@ -21,9 +22,10 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
   constructor(c: Context, a: AttributeSet?) : super(c, a)
   //</editor-fold>
 
-  //<editor-fold defaultstate="collapsed" desc="全屏处理">
+  //<editor-fold defaultstate="collapsed" desc="初始化">
   override fun init(context: Context?) {
     super.init(context)
+    this.isNeedShowWifiTip = false
     (getContext() as? Activity)?.let { ac ->
       this.backButton?.setOnClickListener { ac.onBackPressed() } //返回
       this.fullscreenButton?.setOnClickListener { //全屏按钮
@@ -90,7 +92,7 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
   override fun onDetachedFromWindow() { //在clearFullscreenLayout和resolveNormalVideoShow中间执行
     super.onDetachedFromWindow()
     setLifecycleOwner(null)
-    this.onVideoPause()//所以这里离开全屏的时候会调用
+    this.onVideoPause() //所以这里离开全屏的时候会调用
   }
   //</editor-fold>
 
@@ -114,6 +116,13 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
       return true
     }
     return false
+  }
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="dp2px">
+  protected fun dp2px(dpValue: Float): Int {
+    val scale = Resources.getSystem().displayMetrics.density
+    return (dpValue * scale + 0.5f).toInt()
   }
   //</editor-fold>
 }
