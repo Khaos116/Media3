@@ -108,18 +108,19 @@ class MyGsyLivePlayer : MyGsyPlayer {
       CURRENT_STATE_PLAYING -> {
         (mStartButton as? ImageView)?.setImageResource(0)
         mStartButton2?.setImageResource(R.drawable.svg_player_live_pause)
+        mViewNoSignal?.visibility = View.GONE
       }
 
       CURRENT_STATE_ERROR -> {
         (mStartButton as? ImageView)?.setImageResource(R.drawable.svg_player_video_start_big)
         mStartButton2?.setImageResource(R.drawable.svg_player_live_start)
+        mViewChangeLine?.visibility = View.GONE
+        mViewNoSignal?.visibility = View.VISIBLE
       }
 
       else -> {
         (mStartButton as? ImageView)?.setImageResource(R.drawable.svg_player_video_start_big)
         mStartButton2?.setImageResource(R.drawable.svg_player_live_start)
-        mViewChangeLine?.visibility = View.GONE
-        mViewNoSignal?.visibility = View.VISIBLE
       }
     }
   }
@@ -190,6 +191,7 @@ class MyGsyLivePlayer : MyGsyPlayer {
 
   //<editor-fold defaultstate="collapsed" desc="重新播放">
   private fun reStartPlay(url: String) {
+    mViewNoSignal?.visibility = View.GONE
     if (isInPlayingState) onVideoPause()
     this.onVideoReset()
     this.setUp(url, false, mTitleTextView?.text?.toString())
@@ -205,7 +207,7 @@ class MyGsyLivePlayer : MyGsyPlayer {
 
   //<editor-fold defaultstate="collapsed" desc="处理底部进度条显示问题">
   override fun setViewShowState(view: View?, visibility: Int) {
-    if (view == mBottomContainer && visibility == View.VISIBLE) {
+    if (view == mBottomProgressBar && visibility == View.VISIBLE) {
       super.setViewShowState(view, View.INVISIBLE)
     } else {
       super.setViewShowState(view, visibility)
