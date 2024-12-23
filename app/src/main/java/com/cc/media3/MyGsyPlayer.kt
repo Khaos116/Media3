@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.*
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+import com.shuyu.gsyvideoplayer.video.base.GSYBaseVideoPlayer
 import com.shuyu.gsyvideoplayer.video.base.GSYVideoPlayer
 import java.io.File
 
@@ -24,6 +25,7 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="初始化">
+  protected var mFullPlayer: GSYBaseVideoPlayer? = null
   override fun init(context: Context?) {
     super.init(context)
     this.isNeedShowWifiTip = false
@@ -31,10 +33,17 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
       this.backButton?.setOnClickListener { ac.onBackPressed() } //返回
       this.fullscreenButton?.setOnClickListener { //全屏按钮
         this.mShowFullAnimation = false //有动画会有延迟，导致mOrientationUtils没有初始化
-        super.startWindowFullscreen(ac, true, true) //通过UI进行全屏播放
+        val player = super.startWindowFullscreen(ac, true, true) //通过UI进行全屏播放
+        mFullPlayer = player
+        dealFullPlayer(player)
         mOrientationUtils?.resolveByClick() //横竖屏切换
       }
     }
+  }
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="进入全屏">
+  open fun dealFullPlayer(player: GSYBaseVideoPlayer) {
   }
   //</editor-fold>
 
