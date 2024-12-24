@@ -84,8 +84,14 @@ class MyGsyLivePlayer : MyGsyPlayer {
     mChangeLineParent = findViewById(R.id.llLine)
     mTvLine1 = findViewById(R.id.tvLine1)
     mTvLine2 = findViewById(R.id.tvLine2)
-    mViewChangeLine?.setOnClickListener { mViewChangeLine?.visibility = View.GONE }
-    mChangeLineParent?.setOnClickListener { mViewChangeLine?.visibility = View.GONE }
+    mViewChangeLine?.setOnClickListener {
+      mViewChangeLine?.visibility = View.GONE
+      if (mBottomContainer?.visibility != View.VISIBLE) {
+        onClickUiToggle(null)
+        startDismissControlViewTimer()
+      }
+    }
+    mChangeLineParent?.setOnClickListener { mViewChangeLine?.performClick() }
     mTvLine1?.setOnClickListener { playByLineIndex(0) }
     mTvLine2?.setOnClickListener { playByLineIndex(1) }
     //显示线路
@@ -203,7 +209,13 @@ class MyGsyLivePlayer : MyGsyPlayer {
   //<editor-fold defaultstate="collapsed" desc="设置选中线路">
   @SuppressLint("SetTextI18n")
   fun playByLineIndex(index: Int) {
-    mViewChangeLine?.visibility = View.GONE
+    if (mViewChangeLine?.visibility == View.VISIBLE) {
+      mViewChangeLine?.visibility = View.GONE
+      if (mBottomContainer?.visibility != View.VISIBLE) {
+        onClickUiToggle(null)
+        startDismissControlViewTimer()
+      }
+    }
     mCurrentLine?.text = "线路${index + 1}"
     mCurrentLine?.visibility = View.VISIBLE
     if (mUrls.size > index && mOriginUrl != mUrls[index]) reStartPlay(mUrls[index])
