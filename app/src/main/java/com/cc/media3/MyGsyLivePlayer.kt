@@ -62,6 +62,7 @@ class MyGsyLivePlayer : MyGsyPlayer {
     this.isNeedOrientationUtils = false //不需要屏幕旋转
     this.titleTextView.visibility = View.VISIBLE //显示title
     this.backButton.visibility = View.VISIBLE //显示返回键
+    this.mChangePosition = false //不允许切换进度
     //无信号
     mViewNoSignal = findViewById(R.id.rlNoSignal)
     mTvChangeNoSignal = findViewById(R.id.tvChangeLive)
@@ -110,6 +111,7 @@ class MyGsyLivePlayer : MyGsyPlayer {
   override fun dealFullPlayer(player: GSYBaseVideoPlayer) {
     super.dealFullPlayer(player)
     (player as? MyGsyLivePlayer)?.let { p ->
+      p.mChangePosition = false //不允许切换进度
       p.setLinesAndHeader(mUrls, mTitleTextView?.text?.toString(), mHeaders)
       p.mCurrentLine?.text = this.mCurrentLine?.text ?: "线路1"
       p.mCurrentLine?.visibility = View.VISIBLE
@@ -121,6 +123,23 @@ class MyGsyLivePlayer : MyGsyPlayer {
         }
       }
     }
+  }
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="不允许滑动进度">
+  override fun touchSurfaceMove(deltaX: Float, deltaY: Float, y: Float) {
+    mChangePosition = false
+    super.touchSurfaceMove(deltaX, deltaY, y)
+  }
+
+  override fun touchSurfaceMoveFullLogic(absDeltaX: Float, absDeltaY: Float) {
+    super.touchSurfaceMoveFullLogic(absDeltaX, absDeltaY)
+    mChangePosition = false
+  }
+
+  override fun touchSurfaceUp() {
+    mChangePosition = false
+    super.touchSurfaceUp()
   }
   //</editor-fold>
 
