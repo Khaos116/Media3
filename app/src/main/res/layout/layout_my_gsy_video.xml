@@ -384,4 +384,77 @@
       </LinearLayout>
     </HorizontalScrollView>
   </LinearLayout>
+  <!--无法播放的View-->
+  <RelativeLayout
+    android:id="@+id/rlNoSignal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:clickable="true"
+    android:focusable="true"
+    android:visibility="gone"
+    tools:visibility="gone">
+
+    <ImageView
+      android:id="@+id/ivNoSignal"
+      android:layout_width="152dp"
+      android:layout_height="152dp"
+      android:layout_centerHorizontal="true"
+      android:contentDescription="@null"
+      android:src="@drawable/ic2025_no_signal_live" />
+
+    <TextView
+      android:id="@+id/tvNoSignal"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignBottom="@id/ivNoSignal"
+      android:layout_centerHorizontal="true"
+      android:layout_marginBottom="4dp"
+      android:includeFontPadding="false"
+      android:text="直播信号被吃掉了"
+      android:textColor="@color/white"
+      android:textSize="12sp"
+      tools:ignore="HardcodedText" />
+    <!--返回按钮-->
+    <ImageView
+      android:id="@+id/backNoSignal"
+      android:layout_width="30dp"
+      android:layout_height="38dp"
+      android:contentDescription="@null"
+      android:paddingVertical="10dp"
+      android:src="@drawable/svg_player_back" />
+
+
+    <LinearLayout
+      android:id="@+id/llBottom"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_alignParentBottom="true"
+      android:layout_marginBottom="20dp"
+      android:gravity="center_vertical"
+      android:orientation="horizontal">
+
+      <Space
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
+
+      <TextView
+        android:id="@+id/tvRefreshLive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableStart="@drawable/svg_player_live_refresh"
+        android:drawablePadding="4dp"
+        android:includeFontPadding="false"
+        android:text="刷新重试"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        tools:ignore="HardcodedText" />
+
+      <Space
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
+    </LinearLayout>
+  </RelativeLayout>
 </RelativeLayout>
