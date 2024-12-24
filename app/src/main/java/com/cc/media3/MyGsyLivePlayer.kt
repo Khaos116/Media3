@@ -108,21 +108,35 @@ class MyGsyLivePlayer : MyGsyPlayer {
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="进入全屏后的处理">
-  override fun dealFullPlayer(player: GSYBaseVideoPlayer) {
-    super.dealFullPlayer(player)
+  override fun dealEnterFullPlayer(player: GSYBaseVideoPlayer) {
+    super.dealEnterFullPlayer(player)
     (player as? MyGsyLivePlayer)?.let { p ->
       p.mChangePosition = false //不允许切换进度
       p.setLinesAndHeader(mUrls, mTitleTextView?.text?.toString(), mHeaders)
       p.mCurrentLine?.text = this.mCurrentLine?.text ?: "线路1"
       p.mCurrentLine?.visibility = View.VISIBLE
       p.mChangeLineParent?.let { pp ->
-        val count = pp.childCount
         val index = p.mUrls.indexOf(p.mOriginUrl)
-        for (i in 0 until count) {
-          (pp[i] as? TextView)?.setBackgroundResource(if (i == index) R.drawable.shape_half_line_btn_bg_sel else R.drawable.shape_half_line_btn_bg_normal)
+        for (i in 0 until pp.childCount) {
+          pp[i].setBackgroundResource(if (i == index) R.drawable.shape_half_line_btn_bg_sel else R.drawable.shape_half_line_btn_bg_normal)
         }
       }
     }
+  }
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="退出全屏同步路线显示">
+  override fun clearFullscreenLayout() {
+    (mFullPlayer as? MyGsyLivePlayer)?.let { p ->
+      this.mCurrentLine?.text = p.mCurrentLine?.text
+      val index = mUrls.indexOf(p.mOriginUrl)
+      mChangeLineParent?.let { pp ->
+        for (i in 0 until pp.childCount) {
+          pp[i].setBackgroundResource(if (i == index) R.drawable.shape_half_line_btn_bg_sel else R.drawable.shape_half_line_btn_bg_normal)
+        }
+      }
+    }
+    super.clearFullscreenLayout()
   }
   //</editor-fold>
 
