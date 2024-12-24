@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.res.Resources
 import android.os.Bundle
 import android.util.Base64
+import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.FragmentActivity
 import androidx.media3.common.C
@@ -77,7 +78,7 @@ class MainActivity : FragmentActivity() {
       }
     })
     GSYVideoType.setShowType(GSYVideoType.SCREEN_TYPE_DEFAULT) //默认显示比例
-    GSYVideoType.setShowType(GSYVideoType.SCREEN_TYPE_FULL) //全屏裁减显示，为了显示正常
+    //GSYVideoType.setShowType(GSYVideoType.SCREEN_TYPE_FULL) //全屏裁减显示，为了显示正常
     GSYVideoType.setRenderType(GSYVideoType.SUFRACE) //SurfaceView，动画切换等时候效果比较差
     //GSYVideoType.setRenderType(GSYVideoType.GLSURFACE)
     //GSYVideoType.setRenderType(GSYVideoType.TEXTURE)//发现https://media.axprod.net/TestVectors/v7-MultiDRM-SingleKey/Manifest_1080p.mpd无画面
@@ -88,7 +89,12 @@ class MainActivity : FragmentActivity() {
   //<editor-fold defaultstate="collapsed" desc="初始化">
   private fun init() {
     binding.rlVideoView.layoutParams.height = (9f / 16 * Resources.getSystem().displayMetrics.widthPixels).toInt()
-    mVideoPlayer = binding.videoPlayer
+    mVideoPlayer = when ((Math.random() * 100 + 1).toInt() % 3) {
+      1 -> MyGsyLivePlayer(this)
+      2 -> MyGsyVideoPlayer(this)
+      else -> MyGsyWebPlayer(this)
+    }
+    binding.rlVideoView.addView(mVideoPlayer, ViewGroup.LayoutParams(-1, -1))
     mVideoPlayer?.isNeedShowWifiTip = false
     val p = mUrls[(Math.random() * mUrls.size).toInt()]
     mVideoPlayer?.let { videoPlayer ->
@@ -106,6 +112,9 @@ class MainActivity : FragmentActivity() {
       (videoPlayer as? MyGsyLivePlayer)?.let { player ->
         player.setLinesAndHeader(mUrls.map { a -> a.second }.take(6).toMutableList(), "测试线路切换", hashMapOf())
         player.playByLineIndex(0)
+      }
+      (videoPlayer as? MyGsyWebPlayer)?.let { player ->
+        player.startPlay("file:///android_asset/test_video_play.html", "测试H5播放视频")
       }
     }
   }

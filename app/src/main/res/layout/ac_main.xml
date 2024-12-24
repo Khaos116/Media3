@@ -10,12 +10,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/black">
-
-    <com.cc.media3.MyGsyLivePlayer
-      android:id="@+id/videoPlayer"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_gravity="center" />
   </RelativeLayout>
 
   <View
