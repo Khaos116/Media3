@@ -35,7 +35,7 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
         this.mShowFullAnimation = false //有动画会有延迟，导致mOrientationUtils没有初始化
         val player = super.startWindowFullscreen(ac, true, true) //通过UI进行全屏播放
         mFullPlayer = player
-        dealFullPlayer(player)
+        dealEnterFullPlayer(player)
         mOrientationUtils?.resolveByClick() //横竖屏切换
       }
     }
@@ -43,7 +43,7 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="进入全屏">
-  open fun dealFullPlayer(player: GSYBaseVideoPlayer) {
+  open fun dealEnterFullPlayer(player: GSYBaseVideoPlayer) {
   }
   //</editor-fold>
 
