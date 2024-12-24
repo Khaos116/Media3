@@ -82,9 +82,23 @@
       android:id="@+id/total"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginEnd="1dp"
+      android:layout_marginEnd="10dp"
       android:text="00:00"
       android:textColor="#ffffff"
+      android:textSize="11sp"
+      tools:ignore="HardcodedText" />
+
+    <TextView
+      android:id="@+id/tvSpeed"
+      android:layout_width="wrap_content"
+      android:layout_height="20dp"
+      android:layout_marginEnd="1dp"
+      android:background="@drawable/shape_half_line_bg_black50"
+      android:gravity="center"
+      android:includeFontPadding="false"
+      android:paddingHorizontal="8dp"
+      android:text="x1.00"
+      android:textColor="@color/white"
       android:textSize="11sp"
       tools:ignore="HardcodedText" />
     <!--全屏按钮-->
@@ -154,8 +168,8 @@
     android:layout_height="30dp"
     android:layout_centerHorizontal="true"
     android:layout_centerVertical="true"
-    android:progressTint="#4C9EEA"
     android:indeterminateTint="#4C9EEA"
+    android:progressTint="#4C9EEA"
     android:visibility="invisible"
     tools:visibility="visible" />
   <!--中间开始按钮-->
@@ -198,4 +212,176 @@
     android:src="@drawable/unlock"
     android:visibility="gone"
     tools:visibility="visible" />
+  <!--倍速切换的View-->
+  <LinearLayout
+    android:id="@+id/llSpeedChange"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#B3000000"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:visibility="gone"
+    tools:visibility="gone">
+
+    <TextView
+      android:id="@+id/tvChangeSpeedHint"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:includeFontPadding="false"
+      android:paddingTop="30dp"
+      android:text="播放速度选择"
+      android:textColor="@color/white"
+      android:textSize="14sp"
+      tools:ignore="HardcodedText" />
+
+    <HorizontalScrollView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:fillViewport="true"
+      android:overScrollMode="never"
+      android:paddingVertical="30dp"
+      android:scrollbars="none">
+
+      <LinearLayout
+        android:id="@+id/llSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Space
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="2" />
+
+        <TextView
+          android:id="@+id/tvSpeed1"
+          android:layout_width="wrap_content"
+          android:layout_height="22dp"
+          android:background="@drawable/shape_half_line_btn_bg_sel"
+          android:gravity="center"
+          android:includeFontPadding="false"
+          android:paddingHorizontal="5dp"
+          android:text="x0.50"
+          android:textColor="@color/white"
+          android:textSize="12sp"
+          tools:ignore="HardcodedText" />
+
+        <Space
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1" />
+
+        <TextView
+          android:id="@+id/tvSpeed2"
+          android:layout_width="wrap_content"
+          android:layout_height="22dp"
+          android:background="@drawable/shape_half_line_btn_bg_normal"
+          android:gravity="center"
+          android:includeFontPadding="false"
+          android:paddingHorizontal="5dp"
+          android:text="x0.75"
+          android:textColor="@color/white"
+          android:textSize="12sp"
+          tools:ignore="HardcodedText" />
+
+        <Space
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1" />
+
+        <TextView
+          android:id="@+id/tvSpeed3"
+          android:layout_width="wrap_content"
+          android:layout_height="22dp"
+          android:background="@drawable/shape_half_line_btn_bg_normal"
+          android:gravity="center"
+          android:includeFontPadding="false"
+          android:paddingHorizontal="5dp"
+          android:text="x1.00"
+          android:textColor="@color/white"
+          android:textSize="12sp"
+          tools:ignore="HardcodedText" />
+
+        <Space
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1" />
+
+        <TextView
+          android:id="@+id/tvSpeed4"
+          android:layout_width="wrap_content"
+          android:layout_height="22dp"
+          android:background="@drawable/shape_half_line_btn_bg_normal"
+          android:gravity="center"
+          android:includeFontPadding="false"
+          android:paddingHorizontal="5dp"
+          android:text="x1.25"
+          android:textColor="@color/white"
+          android:textSize="12sp"
+          tools:ignore="HardcodedText" />
+
+        <Space
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1" />
+
+        <TextView
+          android:id="@+id/tvSpeed5"
+          android:layout_width="wrap_content"
+          android:layout_height="22dp"
+          android:background="@drawable/shape_half_line_btn_bg_normal"
+          android:gravity="center"
+          android:includeFontPadding="false"
+          android:paddingHorizontal="5dp"
+          android:text="x1.50"
+          android:textColor="@color/white"
+          android:textSize="12sp"
+          tools:ignore="HardcodedText" />
+
+        <Space
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1" />
+
+        <TextView
+          android:id="@+id/tvSpeed6"
+          android:layout_width="wrap_content"
+          android:layout_height="22dp"
+          android:background="@drawable/shape_half_line_btn_bg_normal"
+          android:gravity="center"
+          android:includeFontPadding="false"
+          android:paddingHorizontal="5dp"
+          android:text="x1.75"
+          android:textColor="@color/white"
+          android:textSize="12sp"
+          tools:ignore="HardcodedText" />
+
+        <Space
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1" />
+
+        <TextView
+          android:id="@+id/tvSpeed7"
+          android:layout_width="wrap_content"
+          android:layout_height="22dp"
+          android:background="@drawable/shape_half_line_btn_bg_normal"
+          android:gravity="center"
+          android:includeFontPadding="false"
+          android:paddingHorizontal="5dp"
+          android:text="x2.00"
+          android:textColor="@color/white"
+          android:textSize="12sp"
+          tools:ignore="HardcodedText" />
+
+        <Space
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="2" />
+      </LinearLayout>
+    </HorizontalScrollView>
+  </LinearLayout>
 </RelativeLayout>
