@@ -90,7 +90,7 @@ class MainActivity : FragmentActivity() {
     binding.rlVideoView.layoutParams.height = (9f / 16 * Resources.getSystem().displayMetrics.widthPixels).toInt()
     mVideoPlayer = binding.videoPlayer
     mVideoPlayer?.isNeedShowWifiTip = false
-    val p = mUrls[7] //mUrls[(Math.random() * mUrls.size).toInt()]
+    val p = mUrls[(Math.random() * mUrls.size).toInt()]
     mVideoPlayer?.let { videoPlayer ->
       //增加封面
       videoPlayer.thumbImageView = ImageView(this).apply {
@@ -98,8 +98,9 @@ class MainActivity : FragmentActivity() {
         setImageResource(R.mipmap.ic_launcher)
       }
       (videoPlayer as? MyGsyVideoPlayer)?.let { player ->
-        player.setUp(p.second, p.first.startsWith("普通"), p.first)
-        mHeaders.firstOrNull { f -> f.first == p.second }?.second?.let { header -> videoPlayer.mapHeadData = header }
+        val b = mUrls[6]
+        player.setUp(b.second, b.first.startsWith("普通"), b.first)
+        mHeaders.firstOrNull { f -> f.first == b.second }?.second?.let { header -> videoPlayer.mapHeadData = header }
         player.startPlayLogic()
       }
       (videoPlayer as? MyGsyLivePlayer)?.let { player ->
