@@ -17,7 +17,7 @@ import java.io.File
  * Date:2024/12/20
  * Time:21:44
  */
-@Suppress("DEPRECATION")
+@Suppress("DEPRECATION", "MemberVisibilityCanBePrivate")
 open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
   //<editor-fold defaultstate="collapsed" desc="多构造">
   constructor(c: Context) : super(c)
