@@ -1,9 +1,11 @@
 package com.cc.media3
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
+import android.graphics.Point
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +13,8 @@ import android.widget.FrameLayout
 import androidx.lifecycle.*
 import com.shuyu.gsyvideoplayer.utils.CommonUtil
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+import com.shuyu.gsyvideoplayer.video.base.GSYBaseVideoPlayer
+import com.shuyu.gsyvideoplayer.view.SmallVideoTouch
 
 /**
  * Author:XX
@@ -31,7 +35,7 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
     this.isNeedShowWifiTip = false
     (getContext() as? Activity)?.let { ac ->
       this.backButton?.setOnClickListener { ac.onBackPressed() } //返回
-      this.fullscreenButton?.setOnClickListener { //全屏按钮
+      this.mFullscreenButton?.setOnClickListener { //全屏按钮
         if (this.mIfCurrentIsFullscreen) {
           exitMyWindowFullscreen()
         } else {
@@ -125,18 +129,10 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
   }
   //</editor-fold>
 
-  //<editor-fold defaultstate="collapsed" desc="进入小窗和退出小窗处理">
-  protected fun startMyWindowSmall(showBar: Boolean = false) {
-  }
-
-  protected fun exitMyWindowSmall() {
-  }
-  //</editor-fold>
-
   //<editor-fold defaultstate="collapsed" desc="进入全屏和退出全屏处理">
-  private var mOriginParent: ViewGroup? = null
+  private var mFullBeforeParent: ViewGroup? = null
   protected fun startMyWindowFullscreen() {
-    mOriginParent = this.parent as? ViewGroup
+    mFullBeforeParent = this.parent as? ViewGroup
     viewGroup?.findViewById<View>(fullId)?.removeParent()
     viewGroup.addView(FrameLayout(mContext).also { fl ->
       fl.setBackgroundColor(Color.BLACK)
@@ -160,7 +156,7 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
     viewGroup?.findViewById<View>(fullId)?.removeParent()
     this.mIfCurrentIsFullscreen = false
     this.id = NO_ID
-    mOriginParent?.addView(this, ViewGroup.LayoutParams(-1, -1))
+    mFullBeforeParent?.addView(this, ViewGroup.LayoutParams(-1, -1))
     CommonUtil.showSupportActionBar(context, true, true)
     mOrientationUtils?.resolveByClick() //横竖屏切换
     changeBottomHeight(false)
@@ -170,10 +166,102 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
   }
   //</editor-fold>
 
+  //<editor-fold defaultstate="collapsed" desc="进入小窗和退出小窗处理">
+  private var mSmallBeforeParent: ViewGroup? = null
+  protected var mIfCurrentIsSmallScreen = false
+  open fun startMyWindowSmall() {
+    mSmallBeforeParent = this.parent as? ViewGroup
+    val ratio = 0.6f
+    val newW = ((mSmallBeforeParent?.width ?: 0) * ratio).toInt()
+    val newH = ((mSmallBeforeParent?.height ?: 0) * ratio).toInt()
+    val pL = CommonUtil.getScreenWidth(mContext) - newW
+    val pT = CommonUtil.getScreenHeight(mContext) - newH
+    viewGroup?.findViewById<View>(smallId)?.removeParent()
+    viewGroup.addView(FrameLayout(mContext).also { fl ->
+      this.removeParent()
+      this.mIfCurrentIsSmallScreen = true
+      this.id = smallId
+      fl.addView(this, MarginLayoutParams(newW, newH).also { lp ->
+        lp.marginStart = pL / 2
+        lp.topMargin = pT / 2
+      })
+    }, ViewGroup.LayoutParams(-1, -1))
+    this.setIsTouchWiget(false)
+    this.setSmallVideoTextureView(SmallVideoTouch(this, pL, pT)) //改为移动控件效果
+    cancelDismissControlViewTimer()
+    onClickUiToggle(null)
+    mSmallClose?.visibility = View.VISIBLE
+    gsyVideoManager.setLastListener(this)
+    gsyVideoManager.setListener(this)
+    mSmallClose?.setOnClickListener { exitMyWindowSmall() }
+    mVideoAllCallBack?.onEnterSmallWidget(mOriginUrl, this)
+  }
+
+  override fun showSmallVideo(size: Point?, actionBar: Boolean, statusBar: Boolean): GSYBaseVideoPlayer {
+    return super.showSmallVideo(size, actionBar, statusBar)
+  }
+
+  override fun hideSmallVideo() {
+    super.hideSmallVideo()
+  }
+
+  @SuppressLint("ClickableViewAccessibility")
+  open fun exitMyWindowSmall() {
+    (this.parent as? View)?.removeParent()
+    this.removeParent()
+    viewGroup?.findViewById<View>(smallId)?.removeParent()
+    this.mIfCurrentIsSmallScreen = false
+    this.id = NO_ID
+    mSmallBeforeParent?.addView(this, ViewGroup.LayoutParams(-1, -1))
+    this.setIsTouchWiget(true)
+    this.setSmallVideoTextureView(this) //恢复手势操作事件
+    this.mProgressBar?.setOnTouchListener(this) //恢复OnTouchListener事件,setSmallVideoTextureView去除
+    this.mFullscreenButton?.setOnTouchListener(this) //恢复OnTouchListener事件,setSmallVideoTextureView去除
+    if (this is MyGsyVideoPlayer) {
+      mProgressBar?.visibility = View.VISIBLE
+      mCurrentTimeTextView?.visibility = View.VISIBLE
+    }
+    mFullscreenButton?.visibility = View.VISIBLE
+    mSmallClose?.visibility = View.GONE
+    changeUiToPlayingShow()
+    startDismissControlViewTimer()
+    gsyVideoManager.setListener(this)
+    gsyVideoManager.setLastListener(null)
+    mVideoAllCallBack?.onQuitSmallWidget(mOriginUrl, this)
+  }
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="操作UI显示和隐藏">
+  override fun setViewShowState(view: View?, visibility: Int) {
+    if (mIfCurrentIsSmallScreen) {
+      when (view) {
+        mStartButton,
+        mLoadingProgressBar -> super.setViewShowState(view, visibility)
+
+        mBottomProgressBar -> super.setViewShowState(view, if (this is MyGsyVideoPlayer) View.VISIBLE else View.INVISIBLE)
+
+        mSmallClose -> super.setViewShowState(view, View.VISIBLE)
+
+        else -> super.setViewShowState(view, View.INVISIBLE)
+      }
+    } else if (mIfCurrentIsFullscreen) {
+      when (view) {
+        mSmallClose -> super.setViewShowState(view, View.INVISIBLE)
+        else -> super.setViewShowState(view, visibility)
+      }
+    } else {
+      super.setViewShowState(view, visibility)
+    }
+  }
+  //</editor-fold>
+
   //<editor-fold defaultstate="collapsed" desc="外部调用控件返回">
   open fun onBackPressed(): Boolean {
     if (mIfCurrentIsFullscreen) {
-      fullscreenButton?.performClick()
+      exitMyWindowFullscreen()
+      return true
+    } else if (mIfCurrentIsSmallScreen) {
+      exitMyWindowSmall()
       return true
     }
     return false
