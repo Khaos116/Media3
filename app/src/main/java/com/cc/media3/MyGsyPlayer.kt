@@ -17,6 +17,8 @@ import com.shuyu.gsyvideoplayer.video.base.GSYBaseVideoPlayer
 import com.shuyu.gsyvideoplayer.view.SmallVideoTouch
 
 /**
+ * TODO 要适配小窗和全屏时的无网络和异常UI、小窗状态栏位置问题
+ *
  * Author:XX
  * Date:2024/12/20
  * Time:21:44
