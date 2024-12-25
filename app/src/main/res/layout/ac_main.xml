@@ -7,8 +7,8 @@
   android:fitsSystemWindows="true"
   android:orientation="vertical">
 
-  <RelativeLayout
-    android:id="@+id/rlVideoView"
+  <FrameLayout
+    android:id="@+id/flVideoView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/black" />
