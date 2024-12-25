@@ -47,16 +47,6 @@
     android:contentDescription="@null"
     android:src="@drawable/video_click_play_selector"
     android:visibility="gone" />
-  <!--小窗关闭按钮-->
-  <ImageView
-    android:id="@+id/small_close"
-    android:layout_width="30dp"
-    android:layout_height="30dp"
-    android:contentDescription="@null"
-    android:paddingTop="10dp"
-    android:scaleType="centerInside"
-    android:src="@drawable/video_small_close"
-    android:visibility="gone" />
   <!--锁住按钮-->
   <ImageView
     android:id="@+id/lock_screen"
@@ -202,4 +192,14 @@
       android:scaleType="fitCenter"
       android:src="@drawable/svg_player_live_full_enter" />
   </LinearLayout>
+  <!--小窗关闭按钮-->
+  <ImageView
+    android:id="@+id/small_close"
+    android:layout_width="30dp"
+    android:layout_height="30dp"
+    android:contentDescription="@null"
+    android:paddingTop="10dp"
+    android:scaleType="centerInside"
+    android:src="@drawable/video_small_close"
+    android:visibility="gone" />
 </RelativeLayout>
