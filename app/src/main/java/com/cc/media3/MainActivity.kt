@@ -2,6 +2,7 @@ package com.cc.media3
 
 import android.annotation.SuppressLint
 import android.content.res.Resources
+import android.graphics.Point
 import android.os.Bundle
 import android.util.Base64
 import android.view.ViewGroup
@@ -15,6 +16,7 @@ import androidx.media3.exoplayer.drm.*
 import androidx.media3.exoplayer.source.MediaSource
 import com.cc.media3.databinding.AcMainBinding
 import com.shuyu.gsyvideoplayer.cache.CacheFactory
+import com.shuyu.gsyvideoplayer.listener.GSYSampleCallBack
 import com.shuyu.gsyvideoplayer.player.PlayerFactory
 import com.shuyu.gsyvideoplayer.utils.GSYVideoType
 import tv.danmaku.ijk.media.exo2.*
@@ -88,12 +90,35 @@ class MainActivity : FragmentActivity() {
 
   //<editor-fold defaultstate="collapsed" desc="初始化">
   private fun init() {
+    binding.tvEnter.setOnClickListener {
+      mVideoPlayer?.let { p ->
+        if (binding.tvEnter.text.toString() == "进入小窗模式") {
+          binding.tvEnter.text = "退出小窗模式"
+          p.showSmallVideo(Point((p.width * 0.6).toInt(), (p.height * 0.6).toInt()), false, false)
+        } else {
+          binding.tvEnter.text = "进入小窗模式"
+          p.hideSmallVideo()
+          p.onVideoResume()
+        }
+      }
+    }
     binding.rlVideoView.layoutParams.height = (9f / 16 * Resources.getSystem().displayMetrics.widthPixels).toInt()
     mVideoPlayer = when ((Math.random() * 100 + 1).toInt() % 3) {
       1 -> MyGsyLivePlayer(this)
       2 -> MyGsyVideoPlayer(this)
       else -> MyGsyWebPlayer(this)
     }
+    mVideoPlayer?.setVideoAllCallBack(object : GSYSampleCallBack() {
+      override fun onEnterSmallWidget(url: String?, vararg objects: Any?) {
+        super.onEnterSmallWidget(url, *objects)
+        binding.tvEnter.text = "退出小窗模式"
+      }
+
+      override fun onQuitSmallWidget(url: String?, vararg objects: Any?) {
+        super.onQuitSmallWidget(url, *objects)
+        binding.tvEnter.text = "进入小窗模式"
+      }
+    })
     binding.rlVideoView.addView(mVideoPlayer, ViewGroup.LayoutParams(-1, -1))
     mVideoPlayer?.isNeedShowWifiTip = false
     val p = mUrls[(Math.random() * mUrls.size).toInt()]
