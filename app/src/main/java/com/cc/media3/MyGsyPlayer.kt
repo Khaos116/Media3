@@ -3,16 +3,14 @@ package com.cc.media3
 import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
-import android.graphics.Point
+import android.graphics.Color
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
+import android.widget.FrameLayout
 import androidx.lifecycle.*
+import com.shuyu.gsyvideoplayer.utils.CommonUtil
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
-import com.shuyu.gsyvideoplayer.video.base.GSYBaseVideoPlayer
-import com.shuyu.gsyvideoplayer.video.base.GSYVideoPlayer
-import java.io.File
 
 /**
  * Author:XX
@@ -28,45 +26,26 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="初始化">
-  protected var mFullPlayer: GSYBaseVideoPlayer? = null
   override fun init(context: Context?) {
     super.init(context)
     this.isNeedShowWifiTip = false
     (getContext() as? Activity)?.let { ac ->
       this.backButton?.setOnClickListener { ac.onBackPressed() } //返回
       this.fullscreenButton?.setOnClickListener { //全屏按钮
-        this.mShowFullAnimation = false //有动画会有延迟，导致mOrientationUtils没有初始化
-        val player = super.startWindowFullscreen(ac, true, true) //通过UI进行全屏播放
-        mFullPlayer = player
-        dealEnterFullPlayer(player)
-        mOrientationUtils?.resolveByClick() //横竖屏切换
-      }
-    }
-    if (mIfCurrentIsFullscreen) { //处于全屏中的播放器
-      if (mBottomContainer.height > 0) {
-        dealFullUiSize()
-      } else {
-        post { dealFullUiSize() }
+        if (this.mIfCurrentIsFullscreen) {
+          exitMyWindowFullscreen()
+        } else {
+          startMyWindowFullscreen()
+        }
       }
     }
   }
   //</editor-fold>
 
-  //<editor-fold defaultstate="collapsed" desc="处理全屏时控件间距和大小等">
-  protected fun dealFullUiSize() {
-    val h = mBottomContainer.height
-    val add = dp2px(9f)
-    val l = mBottomContainer.paddingStart
-    val t = mBottomContainer.paddingTop
-    val e = mBottomContainer.paddingEnd
-    val b = mBottomContainer.paddingBottom
-    mBottomContainer.layoutParams.height = h + 2 * add
-    mBottomContainer.setPadding(l + add, t + add, e + add, b + add)
-  }
-  //</editor-fold>
-
-  //<editor-fold defaultstate="collapsed" desc="进入全屏">
-  open fun dealEnterFullPlayer(player: GSYBaseVideoPlayer) {
+  //<editor-fold defaultstate="collapsed" desc="dp2px">
+  protected fun dp2px(dpValue: Float): Int {
+    val scale = Resources.getSystem().displayMetrics.density
+    return (dpValue * scale + 0.5f).toInt()
   }
   //</editor-fold>
 
@@ -115,8 +94,6 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="自感应生命周期">
-  private var isNeedRecoverPlay = false
-
   override fun onAttachedToWindow() { //全屏的时候会重新克隆一份播放器到Window.ID_ANDROID_CONTENT控件里面
     super.onAttachedToWindow()
     setLifecycleOwner(getMyLifecycleOwner())
@@ -125,76 +102,81 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
   override fun onDetachedFromWindow() { //在clearFullscreenLayout和resolveNormalVideoShow中间执行
     super.onDetachedFromWindow()
     setLifecycleOwner(null)
-    this.onVideoPause() //所以这里离开全屏的时候会调用
   }
   //</editor-fold>
 
-  //<editor-fold defaultstate="collapsed" desc="退出全屏和恢复">
-  override fun clearFullscreenLayout() {
-    super.clearFullscreenLayout()
-    isNeedRecoverPlay = isInPlayingState
-  }
-
-  override fun resolveNormalVideoShow(oldF: View?, vp: ViewGroup?, gsyVideoPlayer: GSYVideoPlayer?) {
-    super.resolveNormalVideoShow(oldF, vp, gsyVideoPlayer)
-    if (isNeedRecoverPlay) this.onVideoResume()
-    isNeedRecoverPlay = false
-  }
-  //</editor-fold>
-
-  //<editor-fold defaultstate="collapsed" desc="小窗模式关闭，不释放播放器">
-  override fun showSmallVideo(size: Point?, actionBar: Boolean, statusBar: Boolean): GSYBaseVideoPlayer {
-    val r = super.showSmallVideo(size, actionBar, statusBar)
-    (r as? MyGsyPlayer)?.let { p ->
-      if (p.mSmallClose.visibility == VISIBLE) {
-        p.mSmallClose.setOnClickListener {
-          p.onVideoPause()
-          this.hideSmallVideo()
-          this.onVideoResume()
-        }
-      }
+  //<editor-fold defaultstate="collapsed" desc="全屏和非全屏底部操作间距处理">
+  private var mOriginBottomHeight = 0
+  private var mPL = 0
+  private var mPT = 0
+  private var mPR = 0
+  private var mPB = 0
+  protected fun changeBottomHeight(full: Boolean) {
+    if (mOriginBottomHeight == 0) {
+      mOriginBottomHeight = mBottomContainer.height
+      mPL = mBottomContainer.paddingStart
+      mPT = mBottomContainer.paddingTop
+      mPR = mBottomContainer.paddingEnd
+      mPB = mBottomContainer.paddingBottom
     }
-    return r
+    val add = if (full) dp2px(9f) else 0
+    mBottomContainer.layoutParams.height = mOriginBottomHeight + (if (full) (2 * add) else 0)
+    mBottomContainer.setPadding(mPL + add, mPT + add, mPR + add, mPB + add)
   }
   //</editor-fold>
 
-  //<editor-fold defaultstate="collapsed" desc="小窗播放状态ui处理">
-  override fun setViewShowState(view: View?, visibility: Int) {
-    if (mSmallClose?.isVisible == true) {
-      when (view) {
-        mStartButton,
-        mTopContainer,
-        mBottomContainer -> super.setViewShowState(view, View.INVISIBLE)
+  //<editor-fold defaultstate="collapsed" desc="进入小窗和退出小窗处理">
+  protected fun startMyWindowSmall(showBar: Boolean = false) {
+  }
 
-        else -> super.setViewShowState(view, visibility)
-      }
-    } else {
-      super.setViewShowState(view, visibility)
-    }
+  protected fun exitMyWindowSmall() {
+  }
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="进入全屏和退出全屏处理">
+  private var mOriginParent: ViewGroup? = null
+  protected fun startMyWindowFullscreen() {
+    mOriginParent = this.parent as? ViewGroup
+    viewGroup?.findViewById<View>(fullId)?.removeParent()
+    viewGroup.addView(FrameLayout(mContext).also { fl ->
+      fl.setBackgroundColor(Color.BLACK)
+      this.removeParent()
+      this.mIfCurrentIsFullscreen = true
+      this.id = fullId
+      fl.addView(this, ViewGroup.LayoutParams(-1, -1))
+      CommonUtil.hideSupportActionBar(context, true, true)
+      resolveFullVideoShow(context, this, fl)
+      mOrientationUtils?.resolveByClick() //横竖屏切换
+    }, ViewGroup.LayoutParams(-1, -1))
+    changeBottomHeight(true)
+    cancelDismissControlViewTimer()
+    startDismissControlViewTimer()
+    mVideoAllCallBack?.onEnterFullscreen(mOriginUrl, this)
+  }
+
+  protected fun exitMyWindowFullscreen() {
+    (this.parent as? View)?.removeParent()
+    this.removeParent()
+    viewGroup?.findViewById<View>(fullId)?.removeParent()
+    this.mIfCurrentIsFullscreen = false
+    this.id = NO_ID
+    mOriginParent?.addView(this, ViewGroup.LayoutParams(-1, -1))
+    CommonUtil.showSupportActionBar(context, true, true)
+    mOrientationUtils?.resolveByClick() //横竖屏切换
+    changeBottomHeight(false)
+    cancelDismissControlViewTimer()
+    startDismissControlViewTimer()
+    mVideoAllCallBack?.onQuitFullscreen(mOriginUrl, this)
   }
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="外部调用控件返回">
   open fun onBackPressed(): Boolean {
     if (mIfCurrentIsFullscreen) {
-      mFullPlayer?.fullscreenButton?.performClick()
+      fullscreenButton?.performClick()
       return true
     }
     return false
-  }
-  //</editor-fold>
-
-  //<editor-fold defaultstate="collapsed" desc="dp2px">
-  protected fun dp2px(dpValue: Float): Int {
-    val scale = Resources.getSystem().displayMetrics.density
-    return (dpValue * scale + 0.5f).toInt()
-  }
-  //</editor-fold>
-
-  //<editor-fold defaultstate="collapsed" desc="打印播放地址">
-  override fun setUp(url: String?, cacheWithPlay: Boolean, cachePath: File?, title: String?, changeState: Boolean): Boolean {
-    "当前播放地址: $url".logE()
-    return super.setUp(url, cacheWithPlay, cachePath, title, changeState)
   }
   //</editor-fold>
 }
