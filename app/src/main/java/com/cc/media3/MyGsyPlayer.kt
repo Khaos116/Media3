@@ -7,6 +7,7 @@ import android.graphics.Point
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.lifecycle.*
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
 import com.shuyu.gsyvideoplayer.video.base.GSYBaseVideoPlayer
@@ -154,6 +155,22 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
       }
     }
     return r
+  }
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="小窗播放状态ui处理">
+  override fun setViewShowState(view: View?, visibility: Int) {
+    if (mSmallClose?.isVisible == true) {
+      when (view) {
+        mStartButton,
+        mTopContainer,
+        mBottomContainer -> super.setViewShowState(view, View.INVISIBLE)
+
+        else -> super.setViewShowState(view, visibility)
+      }
+    } else {
+      super.setViewShowState(view, visibility)
+    }
   }
   //</editor-fold>
 
