@@ -3,6 +3,7 @@ package com.cc.media3
 import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
+import android.graphics.Point
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
@@ -137,6 +138,22 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
     super.resolveNormalVideoShow(oldF, vp, gsyVideoPlayer)
     if (isNeedRecoverPlay) this.onVideoResume()
     isNeedRecoverPlay = false
+  }
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="小窗模式关闭，不释放播放器">
+  override fun showSmallVideo(size: Point?, actionBar: Boolean, statusBar: Boolean): GSYBaseVideoPlayer {
+    val r = super.showSmallVideo(size, actionBar, statusBar)
+    (r as? MyGsyPlayer)?.let { p ->
+      if (p.mSmallClose.visibility == VISIBLE) {
+        p.mSmallClose.setOnClickListener {
+          p.onVideoPause()
+          this.hideSmallVideo()
+          this.onVideoResume()
+        }
+      }
+    }
+    return r
   }
   //</editor-fold>
 
