@@ -21,6 +21,7 @@ import java.io.File
 open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
   //<editor-fold defaultstate="collapsed" desc="多构造">
   constructor(c: Context) : super(c)
+  constructor(c: Context, b: Boolean?) : super(c, b ?: false)
   constructor(c: Context, a: AttributeSet?) : super(c, a)
   //</editor-fold>
 
@@ -39,6 +40,26 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
         mOrientationUtils?.resolveByClick() //横竖屏切换
       }
     }
+    if (mIfCurrentIsFullscreen) { //处于全屏中的播放器
+      if (mBottomContainer.height > 0) {
+        dealFullUiSize()
+      } else {
+        post { dealFullUiSize() }
+      }
+    }
+  }
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="处理全屏时控件间距和大小等">
+  protected fun dealFullUiSize() {
+    val h = mBottomContainer.height
+    val add = dp2px(9f)
+    val l = mBottomContainer.paddingStart
+    val t = mBottomContainer.paddingTop
+    val e = mBottomContainer.paddingEnd
+    val b = mBottomContainer.paddingBottom
+    mBottomContainer.layoutParams.height = h + 2 * add
+    mBottomContainer.setPadding(l + add, t + add, e + add, b + add)
   }
   //</editor-fold>
 
