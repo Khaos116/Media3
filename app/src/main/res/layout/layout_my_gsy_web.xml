@@ -118,17 +118,12 @@
     android:layout_height="34dp"
     android:layout_alignParentBottom="true"
     android:background="#99000000"
-    android:gravity="center_vertical"
+    android:gravity="center_vertical|end"
     android:orientation="horizontal"
     android:paddingVertical="3dp"
     android:visibility="invisible"
     tools:background="#6600fff0"
     tools:visibility="visible">
-
-    <Space
-      android:layout_width="0dp"
-      android:layout_height="wrap_content"
-      android:layout_weight="1" />
     <!--重新播放-->
     <ImageView
       android:id="@+id/ivReStart"
