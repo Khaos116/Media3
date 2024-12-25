@@ -22,6 +22,7 @@ import com.shuyu.gsyvideoplayer.player.PlayerFactory
 import com.shuyu.gsyvideoplayer.utils.GSYVideoType
 import tv.danmaku.ijk.media.exo2.*
 import java.io.File
+import kotlin.system.exitProcess
 
 //https://www.skylinewebcams.com/zh/webcam/vietnam.html
 @Suppress("DEPRECATION")
@@ -160,8 +161,8 @@ class MainActivity : FragmentActivity() {
   override fun onBackPressed() {
     if (mVideoPlayer?.onBackPressed() == true) return
     super.onBackPressed()
-    //finish()
-    //exitProcess(0)
+    finish()
+    exitProcess(0)
   }
   //</editor-fold>
 
