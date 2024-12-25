@@ -20,7 +20,7 @@ import kotlin.math.abs
 class MyGsyWebPlayer : MyGsyPlayer {
   //<editor-fold defaultstate="collapsed" desc="多构造">
   constructor(c: Context) : super(c)
-  constructor(c: Context, b: Boolean?) : super(c, b)
+  constructor(c: Context, b: Boolean) : super(c, b)
   constructor(c: Context, a: AttributeSet?) : super(c, a)
   //</editor-fold>
 
