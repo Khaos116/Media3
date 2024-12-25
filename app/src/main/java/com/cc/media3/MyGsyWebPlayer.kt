@@ -9,7 +9,6 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.widget.ImageView
 import androidx.core.view.isVisible
-import com.shuyu.gsyvideoplayer.video.base.GSYBaseVideoPlayer
 import kotlin.math.abs
 
 /**
@@ -39,7 +38,10 @@ class MyGsyWebPlayer : MyGsyPlayer {
     super.init(context)
     (mStartButton as? ImageView)?.setImageResource(0)
     mRefresh = findViewById(R.id.ivReStart)
-    mRefresh?.setOnClickListener { mWebView?.reload() }
+    mRefresh?.setOnClickListener {
+      mWebView?.reload()
+      "Web重新播放地址:${mWebView?.url ?: ""}".logE()
+    }
     mWebView = findViewById(R.id.webView)
     mWebView?.settings?.let { ws ->
       ws.javaScriptCanOpenWindowsAutomatically = true //兼容弹窗
@@ -73,9 +75,9 @@ class MyGsyWebPlayer : MyGsyPlayer {
 
   //<editor-fold defaultstate="collapsed" desc="外部调用播放">
   fun startPlay(h5Url: String, title: String) {
-    "WEB播放地址:$h5Url".logE()
     this.titleTextView?.text = title
     this.mWebView?.loadUrl(h5Url)
+    "Web播放地址:$h5Url".logE()
   }
   //</editor-fold>
 
@@ -99,6 +101,7 @@ class MyGsyWebPlayer : MyGsyPlayer {
   //<editor-fold defaultstate="collapsed" desc="控件显示和隐藏">
   override fun setViewShowState(view: View?, visibility: Int) {
     when (view) {
+      mSmallClose,
       mTopContainer,
       mBottomContainer -> super.setViewShowState(view, visibility)
 

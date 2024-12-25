@@ -137,6 +137,7 @@ class MyGsyVideoPlayer : MyGsyPlayer {
   fun startPlay(url: String, playWithCache: Boolean, title: String) {
     setUp(url, playWithCache, title)
     startPlayLogic()
+    "Video播放地址:$url".logE()
   }
   //</editor-fold>
 
@@ -147,6 +148,7 @@ class MyGsyVideoPlayer : MyGsyPlayer {
     this.onVideoReset()
     this.setUp(url, false, mTitleTextView?.text?.toString())
     this.startPlayLogic()
+    "Video重新播放地址:$url".logE()
   }
   //</editor-fold>
 

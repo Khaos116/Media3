@@ -11,7 +11,6 @@ import android.view.View
 import android.widget.*
 import androidx.core.view.get
 import androidx.core.view.isVisible
-import com.shuyu.gsyvideoplayer.video.base.GSYBaseVideoPlayer
 
 /**
  * Author:XX
@@ -73,7 +72,7 @@ class MyGsyLivePlayer : MyGsyPlayer {
     }
     mTvRefreshNoSignal?.setOnClickListener {
       mViewNoSignal?.visibility = View.GONE
-      if (!mOriginUrl.isNullOrBlank()) reStartPlay(mOriginUrl)
+      if (!mOriginUrl.isNullOrBlank()) reStartPlay(mOriginUrl, true)
     }
     mIvBack2 = findViewById(R.id.backNoSignal)
     mIvBack2?.setOnClickListener {
@@ -100,7 +99,7 @@ class MyGsyLivePlayer : MyGsyPlayer {
     mCurrentLine?.setOnClickListener { mViewChangeLine?.visibility = View.VISIBLE }
     //重新加载
     mCurrentRefresh = findViewById(R.id.ivReStart)
-    mCurrentRefresh?.setOnClickListener { if (!mOriginUrl.isNullOrBlank()) reStartPlay(mOriginUrl) }
+    mCurrentRefresh?.setOnClickListener { if (!mOriginUrl.isNullOrBlank()) reStartPlay(mOriginUrl, true) }
     //播放暂停
     mStartButton2 = findViewById(R.id.start2)
     mStartButton2?.setOnClickListener { mStartButton?.performClick() }
@@ -218,18 +217,23 @@ class MyGsyLivePlayer : MyGsyPlayer {
     }
     mCurrentLine?.text = "线路${index + 1}"
     mCurrentLine?.visibility = View.VISIBLE
-    if (mUrls.size > index && mOriginUrl != mUrls[index]) reStartPlay(mUrls[index])
+    if (mUrls.size > index && mOriginUrl != mUrls[index]) reStartPlay(mUrls[index], false)
   }
   //</editor-fold>
 
   //<editor-fold defaultstate="collapsed" desc="重新播放">
-  private fun reStartPlay(url: String) {
+  private fun reStartPlay(url: String, re: Boolean) {
     mViewNoSignal?.visibility = View.GONE
     if (isInPlayingState) onVideoPause()
     this.onVideoReset()
     this.setUp(url, false, mTitleTextView?.text?.toString())
     if (mHeaders.isNotEmpty()) this.mapHeadData = mHeaders
     this.startPlayLogic()
+    if (re) {
+      "Live重新播放地址:$url".logE()
+    } else {
+      "Live播放地址:$url".logE()
+    }
     val count = mChangeLineParent?.childCount ?: 0
     val index = mUrls.indexOf(url)
     for (i in 0 until count) {
