@@ -71,24 +71,6 @@ class MyGsyWebPlayer : MyGsyPlayer {
   override fun getShrinkImageRes() = R.drawable.svg_player_live_full_exit //退出全屏按钮
   //</editor-fold>
 
-  //<editor-fold defaultstate="collapsed" desc="全屏处理">
-  override fun dealEnterFullPlayer(player: GSYBaseVideoPlayer) { //进入全屏
-    super.dealEnterFullPlayer(player)
-    (player as? MyGsyWebPlayer)?.let { p ->
-      mWebView?.onPause()
-      p.startPlay(mWebView?.url ?: "", mTitleTextView?.text?.toString() ?: "")
-    }
-  }
-
-  override fun clearFullscreenLayout() { //退出全屏
-    super.clearFullscreenLayout()
-    (mFullPlayer as? MyGsyWebPlayer)?.let { p ->
-      p.mWebView?.destroy()
-      this.mWebView?.onResume()
-    }
-  }
-  //</editor-fold>
-
   //<editor-fold defaultstate="collapsed" desc="外部调用播放">
   fun startPlay(h5Url: String, title: String) {
     "WEB播放地址:$h5Url".logE()
@@ -125,7 +107,7 @@ class MyGsyWebPlayer : MyGsyPlayer {
   }
   //</editor-fold>
 
-  //<editor-fold defaultstate="collapsed" desc="处理开始和暂停图标">
+  //<editor-fold defaultstate="collapsed" desc="处理中间开始和暂停图标">
   override fun updateStartImage() {
     (mStartButton as? ImageView)?.setImageResource(0)
   }

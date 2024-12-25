@@ -107,39 +107,6 @@ class MyGsyLivePlayer : MyGsyPlayer {
   }
   //</editor-fold>
 
-  //<editor-fold defaultstate="collapsed" desc="进入全屏后的处理">
-  override fun dealEnterFullPlayer(player: GSYBaseVideoPlayer) {
-    super.dealEnterFullPlayer(player)
-    (player as? MyGsyLivePlayer)?.let { p ->
-      p.mChangePosition = false //不允许切换进度
-      p.setLinesAndHeader(mUrls, mTitleTextView?.text?.toString(), mHeaders)
-      p.mCurrentLine?.text = this.mCurrentLine?.text ?: "线路1"
-      p.mCurrentLine?.visibility = View.VISIBLE
-      p.mChangeLineParent?.let { pp ->
-        val index = p.mUrls.indexOf(p.mOriginUrl)
-        for (i in 0 until pp.childCount) {
-          pp[i].setBackgroundResource(if (i == index) R.drawable.shape_half_line_btn_bg_sel else R.drawable.shape_half_line_btn_bg_normal)
-        }
-      }
-    }
-  }
-  //</editor-fold>
-
-  //<editor-fold defaultstate="collapsed" desc="退出全屏同步路线显示">
-  override fun clearFullscreenLayout() {
-    (mFullPlayer as? MyGsyLivePlayer)?.let { p ->
-      this.mCurrentLine?.text = p.mCurrentLine?.text
-      val index = mUrls.indexOf(p.mOriginUrl)
-      mChangeLineParent?.let { pp ->
-        for (i in 0 until pp.childCount) {
-          pp[i].setBackgroundResource(if (i == index) R.drawable.shape_half_line_btn_bg_sel else R.drawable.shape_half_line_btn_bg_normal)
-        }
-      }
-    }
-    super.clearFullscreenLayout()
-  }
-  //</editor-fold>
-
   //<editor-fold defaultstate="collapsed" desc="不允许滑动进度">
   override fun touchSurfaceMove(deltaX: Float, deltaY: Float, y: Float) {
     mChangePosition = false

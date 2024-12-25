@@ -110,31 +110,6 @@ class MyGsyVideoPlayer : MyGsyPlayer {
   override fun getShrinkImageRes() = R.drawable.svg_player_video_full //退出全屏按钮
   //</editor-fold>
 
-  //<editor-fold defaultstate="collapsed" desc="进入全屏后的处理">
-  override fun dealEnterFullPlayer(player: GSYBaseVideoPlayer) {
-    super.dealEnterFullPlayer(player)
-    (player as? MyGsyVideoPlayer)?.let { p ->
-      p.mTvSpeed?.text = this.mTvSpeed?.text ?: "x1.00"
-      p.speed = this.speed
-      p.mSpeedViews.forEach { tv ->
-        tv.setBackgroundResource(if (tv.text.toString() == p.mTvSpeed?.text?.toString()) R.drawable.shape_half_line_btn_bg_sel else R.drawable.shape_half_line_btn_bg_normal)
-      }
-    }
-  }
-  //</editor-fold>
-
-  //<editor-fold defaultstate="collapsed" desc="退出全屏倍速显示同步处理">
-  override fun clearFullscreenLayout() {
-    (mFullPlayer as? MyGsyVideoPlayer)?.let { p ->
-      val index = mSpeedList.map { a -> a.toFloat() }.indexOf(p.speed)
-      if (index >= 0) {
-        selSpeed(mSpeedViews[index])
-      }
-    }
-    super.clearFullscreenLayout()
-  }
-  //</editor-fold>
-
   //<editor-fold defaultstate="collapsed" desc="处理开始和暂停图标">
   override fun updateStartImage() {
     when (mCurrentState) {
