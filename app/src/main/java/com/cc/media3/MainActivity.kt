@@ -142,13 +142,12 @@ class MainActivity : FragmentActivity() {
       }
       (videoPlayer as? MyGsyVideoPlayer)?.let { player ->
         val b = mUrls[6]
-        player.setUp(b.second, b.first.startsWith("普通"), b.first)
         mHeaders.firstOrNull { f -> f.first == b.second }?.second?.let { header -> videoPlayer.mapHeadData = header }
-        player.startPlayLogic()
+        player.startPlay(b.second, b.first.startsWith("普通"), b.first)
       }
       (videoPlayer as? MyGsyLivePlayer)?.let { player ->
         player.setLinesAndHeader(mUrls.map { a -> a.second }.take(6).toMutableList(), "测试线路切换", hashMapOf())
-        player.playByLineIndex(0)
+        player.startPlay(0)
       }
       (videoPlayer as? MyGsyWebPlayer)?.let { player ->
         player.startPlay("file:///android_asset/test_video_play.html", "测试H5播放视频")

@@ -8,7 +8,6 @@ import android.view.View
 import android.widget.*
 import androidx.core.view.get
 import androidx.core.view.isVisible
-import com.shuyu.gsyvideoplayer.video.base.GSYBaseVideoPlayer
 
 /**
  * Author:XX
@@ -131,6 +130,13 @@ class MyGsyVideoPlayer : MyGsyPlayer {
         mStartButton2?.setImageResource(R.drawable.svg_player_video_start)
       }
     }
+  }
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="开始播放">
+  fun startPlay(url: String, playWithCache: Boolean, title: String) {
+    setUp(url, playWithCache, title)
+    startPlayLogic()
   }
   //</editor-fold>
 

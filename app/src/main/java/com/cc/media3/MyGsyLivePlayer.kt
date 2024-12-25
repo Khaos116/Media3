@@ -93,8 +93,8 @@ class MyGsyLivePlayer : MyGsyPlayer {
       }
     }
     mChangeLineParent?.setOnClickListener { mViewChangeLine?.performClick() }
-    mTvLine1?.setOnClickListener { playByLineIndex(0) }
-    mTvLine2?.setOnClickListener { playByLineIndex(1) }
+    mTvLine1?.setOnClickListener { startPlay(0) }
+    mTvLine2?.setOnClickListener { startPlay(1) }
     //显示线路
     mCurrentLine = findViewById(R.id.tvLine)
     mCurrentLine?.setOnClickListener { mViewChangeLine?.visibility = View.VISIBLE }
@@ -199,7 +199,7 @@ class MyGsyLivePlayer : MyGsyPlayer {
         tv.gravity = Gravity.CENTER
         tv.text = "线路${i + 3}"
         tv.setBackgroundResource(R.drawable.shape_half_line_btn_bg_normal)
-        tv.setOnClickListener { playByLineIndex(i + 2) }
+        tv.setOnClickListener { startPlay(i + 2) }
         mChangeLineParent?.addView(tv, params)
       }
     }
@@ -208,7 +208,7 @@ class MyGsyLivePlayer : MyGsyPlayer {
 
   //<editor-fold defaultstate="collapsed" desc="设置选中线路">
   @SuppressLint("SetTextI18n")
-  fun playByLineIndex(index: Int) {
+  fun startPlay(index: Int) {
     if (mViewChangeLine?.visibility == View.VISIBLE) {
       mViewChangeLine?.visibility = View.GONE
       if (mBottomContainer?.visibility != View.VISIBLE) {
