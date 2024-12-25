@@ -2,11 +2,13 @@ package com.cc.media3
 
 import android.annotation.SuppressLint
 import android.content.res.Resources
+import android.graphics.Color
 import android.graphics.Point
 import android.os.Bundle
 import android.util.Base64
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -23,6 +25,7 @@ import tv.danmaku.ijk.media.exo2.*
 import java.io.File
 
 //https://www.skylinewebcams.com/zh/webcam/vietnam.html
+@Suppress("DEPRECATION")
 class MainActivity : FragmentActivity() {
   //<editor-fold defaultstate="collapsed" desc="变量">
   private lateinit var binding: AcMainBinding
@@ -63,6 +66,7 @@ class MainActivity : FragmentActivity() {
     super.onCreate(savedInstanceState)
     binding = AcMainBinding.inflate(layoutInflater)
     setContentView(binding.root)
+    setStatusColor()
     //EXOPlayer内核，支持格式更多
     PlayerFactory.setPlayManager(Exo2PlayerManager::class.java)
     CacheFactory.setCacheManager(ExoPlayerCacheManager::class.java)
@@ -85,6 +89,14 @@ class MainActivity : FragmentActivity() {
     //GSYVideoType.setRenderType(GSYVideoType.GLSURFACE)
     //GSYVideoType.setRenderType(GSYVideoType.TEXTURE)//发现https://media.axprod.net/TestVectors/v7-MultiDRM-SingleKey/Manifest_1080p.mpd无画面
     init()
+  }
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="状态栏颜色处理">
+  private fun setStatusColor() {
+    window.statusBarColor = Color.parseColor("#000000")
+    val insetsController = WindowCompat.getInsetsController(window, window.decorView)
+    insetsController.isAppearanceLightStatusBars = false
   }
   //</editor-fold>
 
