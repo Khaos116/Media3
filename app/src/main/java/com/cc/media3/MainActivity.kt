@@ -3,7 +3,6 @@ package com.cc.media3
 import android.annotation.SuppressLint
 import android.content.res.Resources
 import android.graphics.Color
-import android.graphics.Point
 import android.os.Bundle
 import android.util.Base64
 import android.view.ViewGroup
@@ -106,15 +105,14 @@ class MainActivity : FragmentActivity() {
       mVideoPlayer?.let { p ->
         if (binding.tvEnter.text.toString() == "进入小窗模式") {
           binding.tvEnter.text = "退出小窗模式"
-          p.showSmallVideo(Point((p.width * 0.6).toInt(), (p.height * 0.6).toInt()), false, false)
+          p.startMyWindowSmall()
         } else {
           binding.tvEnter.text = "进入小窗模式"
-          p.hideSmallVideo()
-          p.onVideoResume()
+          p.exitMyWindowSmall()
         }
       }
     }
-    binding.rlVideoView.layoutParams.height = (9f / 16 * Resources.getSystem().displayMetrics.widthPixels).toInt()
+    binding.flVideoView.layoutParams.height = (9f / 16 * Resources.getSystem().displayMetrics.widthPixels).toInt()
     mVideoPlayer = when ((Math.random() * 100 + 1).toInt() % 3) {
       1 -> MyGsyLivePlayer(this)
       2 -> MyGsyVideoPlayer(this)
@@ -131,7 +129,7 @@ class MainActivity : FragmentActivity() {
         binding.tvEnter.text = "进入小窗模式"
       }
     })
-    binding.rlVideoView.addView(mVideoPlayer, ViewGroup.LayoutParams(-1, -1))
+    binding.flVideoView.addView(mVideoPlayer, ViewGroup.LayoutParams(-1, -1))
     mVideoPlayer?.isNeedShowWifiTip = false
     val p = mUrls[(Math.random() * mUrls.size).toInt()]
     mVideoPlayer?.let { videoPlayer ->
