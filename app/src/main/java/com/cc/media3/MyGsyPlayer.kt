@@ -189,10 +189,10 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
     this.setIsTouchWiget(false)
     this.setSmallVideoTextureView(SmallVideoTouch(this, pL, pT)) //改为移动控件效果
     cancelDismissControlViewTimer()
-    onClickUiToggle(null)
-    mSmallClose?.visibility = View.VISIBLE
+    changeUiToClear()
     gsyVideoManager.setLastListener(this)
     gsyVideoManager.setListener(this)
+    mSmallClose?.visibility = View.VISIBLE
     mSmallClose?.setOnClickListener { exitMyWindowSmall() }
     mVideoAllCallBack?.onEnterSmallWidget(mOriginUrl, this)
   }
