@@ -68,6 +68,23 @@ class MyGsyWebPlayer : MyGsyPlayer {
   }
   //</editor-fold>
 
+  //<editor-fold defaultstate="collapsed" desc="不允许滑动进度">
+  override fun touchSurfaceMove(deltaX: Float, deltaY: Float, y: Float) {
+    mChangePosition = false
+    super.touchSurfaceMove(deltaX, deltaY, y)
+  }
+
+  override fun touchSurfaceMoveFullLogic(absDeltaX: Float, absDeltaY: Float) {
+    super.touchSurfaceMoveFullLogic(absDeltaX, absDeltaY)
+    mChangePosition = false
+  }
+
+  override fun touchSurfaceUp() {
+    mChangePosition = false
+    super.touchSurfaceUp()
+  }
+  //</editor-fold>
+
   //<editor-fold defaultstate="collapsed" desc="全屏按钮">
   override fun getEnlargeImageRes() = R.drawable.svg_player_live_full_enter //全屏按钮
   override fun getShrinkImageRes() = R.drawable.svg_player_live_full_exit //退出全屏按钮
@@ -145,6 +162,13 @@ class MyGsyWebPlayer : MyGsyPlayer {
       }
     }
     return super.dispatchTouchEvent(ev)
+  }
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="防止无法点击Web静音按钮">
+  override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+    mWebView?.onTouchEvent(event)
+    return super.onTouch(v, event)
   }
   //</editor-fold>
 }

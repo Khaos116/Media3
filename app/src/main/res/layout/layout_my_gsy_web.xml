@@ -124,6 +124,11 @@
     android:visibility="invisible"
     tools:background="#6600fff0"
     tools:visibility="visible">
+
+    <Space
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1" />
     <!--重新播放-->
     <ImageView
       android:id="@+id/ivReStart"
@@ -176,11 +181,6 @@
       android:textSize="11sp"
       android:visibility="gone"
       tools:ignore="HardcodedText" />
-
-    <Space
-      android:layout_width="0dp"
-      android:layout_height="wrap_content"
-      android:layout_weight="1" />
     <!--全屏按钮-->
     <ImageView
       android:id="@+id/fullscreen"
