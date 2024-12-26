@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:background="@android:color/black"
   tools:layout_gravity="center"
-  tools:layout_height="220dp"
-  tools:layout_width="match_parent">
+
+  tools:layout_height="202.5dp"
+  tools:layout_width="match_parent"
+
+  >
+  <!--
+   tools:layout_height="121.5dp"
+   tools:layout_width="216dp"
+
+   tools:layout_height="202.5dp"
+   tools:layout_width="match_parent"
+  -->
   <!--播放画面-->
   <RelativeLayout
     android:id="@+id/surface_container"
@@ -234,99 +245,9 @@
     android:src="@drawable/unlock"
     android:visibility="gone"
     tools:visibility="visible" />
-  <!--无法播放的View-->
-  <RelativeLayout
-    android:id="@+id/rlNoSignal"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#000000"
-    android:clickable="true"
-    android:focusable="true"
-    android:visibility="gone"
-    tools:visibility="gone">
-
-    <ImageView
-      android:id="@+id/ivNoSignal"
-      android:layout_width="152dp"
-      android:layout_height="152dp"
-      android:layout_centerHorizontal="true"
-      android:contentDescription="@null"
-      android:src="@drawable/ic2025_no_signal_live" />
-
-    <TextView
-      android:id="@+id/tvNoSignal"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_alignBottom="@id/ivNoSignal"
-      android:layout_centerHorizontal="true"
-      android:layout_marginBottom="4dp"
-      android:includeFontPadding="false"
-      android:text="直播信号被吃掉了"
-      android:textColor="@color/white"
-      android:textSize="12sp"
-      tools:ignore="HardcodedText" />
-    <!--返回按钮-->
-    <ImageView
-      android:id="@+id/backNoSignal"
-      android:layout_width="30dp"
-      android:layout_height="38dp"
-      android:contentDescription="@null"
-      android:paddingVertical="10dp"
-      android:src="@drawable/svg_player_back" />
-
-
-    <LinearLayout
-      android:id="@+id/llBottom"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_alignParentBottom="true"
-      android:layout_marginBottom="20dp"
-      android:gravity="center_vertical"
-      android:orientation="horizontal">
-
-      <Space
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1" />
-
-      <TextView
-        android:id="@+id/tvChangeLive"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:drawableStart="@drawable/svg_player_live_change_line"
-        android:drawablePadding="4dp"
-        android:includeFontPadding="false"
-        android:text="切换线路"
-        android:textColor="@color/white"
-        android:textSize="12sp"
-        tools:ignore="HardcodedText" />
-
-      <Space
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1" />
-
-      <TextView
-        android:id="@+id/tvRefreshLive"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:drawableStart="@drawable/svg_player_live_refresh"
-        android:drawablePadding="4dp"
-        android:includeFontPadding="false"
-        android:text="刷新重试"
-        android:textColor="@color/white"
-        android:textSize="12sp"
-        tools:ignore="HardcodedText" />
-
-      <Space
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1" />
-    </LinearLayout>
-  </RelativeLayout>
   <!--线路切换的View-->
-  <LinearLayout
-    android:id="@+id/llLineChange"
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/clLineChange"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#B3000000"
@@ -335,26 +256,41 @@
     android:gravity="center"
     android:orientation="vertical"
     android:visibility="gone"
-    tools:visibility="visible">
+    tools:visibility="gone">
 
     <TextView
       android:id="@+id/tvChangeLineHint"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:includeFontPadding="false"
-      android:paddingTop="30dp"
       android:text="线路选择"
       android:textColor="@color/white"
       android:textSize="14sp"
+      app:layout_constraintBottom_toTopOf="@id/vHolder"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintVertical_chainStyle="packed"
       tools:ignore="HardcodedText" />
 
+    <View
+      android:id="@+id/vHolder"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      app:layout_constraintBottom_toTopOf="@id/hsv"
+      app:layout_constraintHeight_percent="0.1428"
+      app:layout_constraintTop_toBottomOf="@id/tvChangeLineHint"
+      tools:background="#22ff0000" />
+
     <HorizontalScrollView
+      android:id="@+id/hsv"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:fillViewport="true"
       android:overScrollMode="never"
-      android:paddingVertical="30dp"
-      android:scrollbars="none">
+      android:scrollbars="none"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/vHolder">
 
       <LinearLayout
         android:id="@+id/llLine"
@@ -392,5 +328,85 @@
           tools:ignore="HardcodedText" />
       </LinearLayout>
     </HorizontalScrollView>
-  </LinearLayout>
+  </androidx.constraintlayout.widget.ConstraintLayout>
+  <!--无法播放的View-->
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/clNoSignal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:clickable="true"
+    android:focusable="true"
+    android:visibility="gone"
+    tools:visibility="gone">
+
+    <ImageView
+      android:id="@+id/ivNoSignal"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:contentDescription="@null"
+      android:src="@drawable/ic2025_no_signal_live"
+      app:layout_constraintDimensionRatio="1:1"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHeight_percent="0.7238"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+      android:id="@+id/tvNoSignal"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_centerHorizontal="true"
+      android:includeFontPadding="false"
+      android:text="直播信号被吃掉了"
+      android:textColor="@color/white"
+      android:textSize="11sp"
+      app:layout_constraintBottom_toBottomOf="@id/ivNoSignal"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      tools:ignore="HardcodedText" />
+    <!--返回按钮-->
+    <ImageView
+      android:id="@+id/backNoSignal"
+      android:layout_width="30dp"
+      android:layout_height="38dp"
+      android:contentDescription="@null"
+      android:paddingVertical="10dp"
+      android:src="@drawable/svg_player_back"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+      android:id="@+id/tvChangeLive"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:drawableStart="@drawable/svg_player_live_change_line"
+      android:drawablePadding="4dp"
+      android:includeFontPadding="false"
+      android:text="切换线路"
+      android:textColor="@color/white"
+      android:textSize="12sp"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toStartOf="@id/tvRefreshLive"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/ivNoSignal"
+      tools:ignore="HardcodedText" />
+
+    <!--刷新重试-->
+    <TextView
+      android:id="@+id/tvRefreshLive"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:drawableStart="@drawable/svg_player_live_refresh"
+      android:drawablePadding="4dp"
+      android:includeFontPadding="false"
+      android:text="刷新重试"
+      android:textColor="@color/white"
+      android:textSize="12sp"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toEndOf="@id/tvChangeLive"
+      app:layout_constraintTop_toBottomOf="@id/ivNoSignal"
+      tools:ignore="HardcodedText" />
+  </androidx.constraintlayout.widget.ConstraintLayout>
 </RelativeLayout>

@@ -63,7 +63,7 @@ class MyGsyLivePlayer : MyGsyPlayer {
     this.backButton.visibility = View.VISIBLE //显示返回键
     this.mChangePosition = false //不允许切换进度
     //无信号
-    mViewNoSignal = findViewById(R.id.rlNoSignal)
+    mViewNoSignal = findViewById(R.id.clNoSignal)
     mTvChangeNoSignal = findViewById(R.id.tvChangeLive)
     mTvRefreshNoSignal = findViewById(R.id.tvRefreshLive)
     mTvChangeNoSignal?.setOnClickListener {
@@ -80,7 +80,7 @@ class MyGsyLivePlayer : MyGsyPlayer {
       (context as? Activity)?.onBackPressed()
     }
     //线路切换
-    mViewChangeLine = findViewById(R.id.llLineChange)
+    mViewChangeLine = findViewById(R.id.clLineChange)
     mChangeLineParent = findViewById(R.id.llLine)
     mTvLine1 = findViewById(R.id.tvLine1)
     mTvLine2 = findViewById(R.id.tvLine2)
