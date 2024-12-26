@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Base64
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.view.WindowCompat
@@ -20,6 +21,9 @@ import com.shuyu.gsyvideoplayer.cache.CacheFactory
 import com.shuyu.gsyvideoplayer.listener.GSYSampleCallBack
 import com.shuyu.gsyvideoplayer.player.PlayerFactory
 import com.shuyu.gsyvideoplayer.utils.GSYVideoType
+import com.shuyu.gsyvideoplayer.utils.OrientationUtils
+import com.shuyu.gsyvideoplayer.video.NormalGSYVideoPlayer
+import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
 import tv.danmaku.ijk.media.exo2.*
 import java.io.File
 import kotlin.system.exitProcess
@@ -29,7 +33,8 @@ import kotlin.system.exitProcess
 class MainActivity : FragmentActivity() {
   //<editor-fold defaultstate="collapsed" desc="变量">
   private lateinit var binding: AcMainBinding
-  private var mVideoPlayer: MyGsyPlayer? = null
+  private var mVideoPlayer: StandardGSYVideoPlayer? = null
+  private var mOrientationUtils: OrientationUtils? = null
 
   //https://github.com/Mgsportstv/mgsportstv/blob/e5fefa8/Player/mpdmgfoot.html
   //https://github.com/Streaming2024/TV
@@ -106,19 +111,21 @@ class MainActivity : FragmentActivity() {
       mVideoPlayer?.let { p ->
         if (binding.tvEnter.text.toString() == "进入小窗模式") {
           binding.tvEnter.text = "退出小窗模式"
-          p.startMyWindowSmall()
+          (p as? MyGsyPlayer)?.startMyWindowSmall()
         } else {
           binding.tvEnter.text = "进入小窗模式"
-          p.exitMyWindowSmall()
+          (p as? MyGsyPlayer)?.exitMyWindowSmall()
         }
       }
     }
     binding.flVideoView.layoutParams.height = (9f / 16 * Resources.getSystem().displayMetrics.widthPixels).toInt()
-    mVideoPlayer = when ((Math.random() * 100 + 1).toInt() % 3) {
-      1 -> MyGsyLivePlayer(this)
-      2 -> MyGsyVideoPlayer(this)
-      else -> MyGsyWebPlayer(this)
+    mVideoPlayer = when ((Math.random() * 100 + 1).toInt() % 4) {
+      1 -> MyGsyLivePlayer(this) //自定义效果
+      2 -> MyGsyVideoPlayer(this) //自定义效果
+      3 -> MyGsyWebPlayer(this) //自定义效果
+      else -> NormalGSYVideoPlayer(this) //原始效果
     }
+    binding.tvEnter.visibility = if (mVideoPlayer is MyGsyPlayer) View.VISIBLE else View.GONE
     mVideoPlayer?.setVideoAllCallBack(object : GSYSampleCallBack() {
       override fun onEnterSmallWidget(url: String?, vararg objects: Any?) {
         super.onEnterSmallWidget(url, *objects)
@@ -133,23 +140,42 @@ class MainActivity : FragmentActivity() {
     binding.flVideoView.addView(mVideoPlayer, ViewGroup.LayoutParams(-1, -1))
     mVideoPlayer?.isNeedShowWifiTip = false
     val p = mUrls[(Math.random() * mUrls.size).toInt()]
-    mVideoPlayer?.let { videoPlayer ->
+    mVideoPlayer?.let { temp ->
       //增加封面
-      videoPlayer.thumbImageView = ImageView(this).apply {
+      temp.thumbImageView = ImageView(this).apply {
         scaleType = ImageView.ScaleType.CENTER_CROP
         setImageResource(R.mipmap.ic_launcher)
       }
-      (videoPlayer as? MyGsyVideoPlayer)?.let { player ->
+      (temp as? MyGsyVideoPlayer)?.let { player ->
         val b = mUrls[6]
-        mHeaders.firstOrNull { f -> f.first == b.second }?.second?.let { header -> videoPlayer.mapHeadData = header }
+        mHeaders.firstOrNull { f -> f.first == b.second }?.second?.let { header -> player.mapHeadData = header }
         player.startPlay(b.second, b.first.startsWith("普通"), b.first)
       }
-      (videoPlayer as? MyGsyLivePlayer)?.let { player ->
+      (temp as? MyGsyLivePlayer)?.let { player ->
         player.setLinesAndHeader(mUrls.map { a -> a.second }.take(6).toMutableList(), "测试线路切换", hashMapOf())
         player.startPlay(0)
       }
-      (videoPlayer as? MyGsyWebPlayer)?.let { player ->
+      (temp as? MyGsyWebPlayer)?.let { player ->
         player.startPlay("file:///android_asset/test_video_play.html", "测试H5播放视频")
+      }
+      (temp as? NormalGSYVideoPlayer)?.let { player ->
+        player.setUp(p.second, p.first.startsWith("普通"), p.first)
+        mHeaders.firstOrNull { f -> f.first == p.second }?.second?.let { header -> player.mapHeadData = header }
+        //增加title
+        player.titleTextView.visibility = View.VISIBLE
+        //设置返回键
+        player.backButton.visibility = View.VISIBLE
+        //设置旋转
+        mOrientationUtils = OrientationUtils(this, player)
+        //设置全屏按键功能,这是使用的是旋转屏幕，而不是全屏
+        player.fullscreenButton.setOnClickListener { mOrientationUtils?.resolveByClick() }
+        //是否可以滑动调整
+        player.setIsTouchWiget(true)
+        //设置返回按键功能
+        player.backButton.setOnClickListener { onBackPressed() }
+        ///不需要屏幕旋转
+        player.isNeedOrientationUtils = false
+        player.startPlayLogic()
       }
     }
   }
@@ -159,8 +185,17 @@ class MainActivity : FragmentActivity() {
 
   @Suppress("OVERRIDE_DEPRECATION")
   override fun onBackPressed() {
-    if (mVideoPlayer?.onBackPressed() == true) return
+    val t = mVideoPlayer
+    if (t is NormalGSYVideoPlayer && t.isIfCurrentIsFullscreen) {
+      t.fullscreenButton?.performClick()
+      return
+    } else if (t is MyGsyPlayer && t.onBackPressed()) {
+      return
+    }
     super.onBackPressed()
+    //释放所有
+    t?.setVideoAllCallBack(null)
+    t?.release()
     finish()
     exitProcess(0)
   }
