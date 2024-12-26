@@ -93,6 +93,13 @@ class MyGsyVideoPlayer : MyGsyPlayer {
   }
   //</editor-fold>
 
+  //<editor-fold defaultstate="collapsed" desc="小窗模式关闭倍速切换">
+  override fun startMyWindowSmall() {
+    super.startMyWindowSmall()
+    mViewChangeSpeed?.visibility = View.GONE
+  }
+  //</editor-fold>
+
   //<editor-fold defaultstate="collapsed" desc="设置速度选中">
   @SuppressLint("SetTextI18n")
   private fun selSpeed(v: View) {

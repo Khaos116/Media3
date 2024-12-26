@@ -106,6 +106,13 @@ class MyGsyLivePlayer : MyGsyPlayer {
   }
   //</editor-fold>
 
+  //<editor-fold defaultstate="collapsed" desc="小窗模式关闭线路切换">
+  override fun startMyWindowSmall() {
+    super.startMyWindowSmall()
+    mViewChangeLine?.visibility = View.GONE
+  }
+  //</editor-fold>
+
   //<editor-fold defaultstate="collapsed" desc="不允许滑动进度">
   override fun touchSurfaceMove(deltaX: Float, deltaY: Float, y: Float) {
     mChangePosition = false
