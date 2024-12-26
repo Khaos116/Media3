@@ -12,7 +12,6 @@ import androidx.core.view.isVisible
 import kotlin.math.abs
 
 /**
- * Author:XX
  * Date:2024/12/23
  * Time:22:02
  */

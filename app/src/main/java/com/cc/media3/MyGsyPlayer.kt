@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
-import android.graphics.Point
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
@@ -13,13 +12,9 @@ import android.widget.FrameLayout
 import androidx.lifecycle.*
 import com.shuyu.gsyvideoplayer.utils.CommonUtil
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
-import com.shuyu.gsyvideoplayer.video.base.GSYBaseVideoPlayer
 import com.shuyu.gsyvideoplayer.view.SmallVideoTouch
 
 /**
- * TODO 要适配小窗和全屏时的无网络和异常UI、小窗状态栏位置问题
- *
- * Author:XX
  * Date:2024/12/20
  * Time:21:44
  */
@@ -143,6 +138,7 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
       this.id = fullId
       fl.addView(this, ViewGroup.LayoutParams(-1, -1))
       CommonUtil.hideSupportActionBar(context, true, true)
+      CommonUtil.hideNavKey(context)
       resolveFullVideoShow(context, this, fl)
       mOrientationUtils?.resolveByClick() //横竖屏切换
     }, ViewGroup.LayoutParams(-1, -1))
@@ -160,6 +156,7 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
     this.id = NO_ID
     mFullBeforeParent?.addView(this, ViewGroup.LayoutParams(-1, -1))
     CommonUtil.showSupportActionBar(context, true, true)
+    CommonUtil.showNavKey(context, View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
     mOrientationUtils?.resolveByClick() //横竖屏切换
     changeBottomHeight(false)
     cancelDismissControlViewTimer()
@@ -197,14 +194,6 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
     mSmallClose?.visibility = View.VISIBLE
     mSmallClose?.setOnClickListener { exitMyWindowSmall() }
     mVideoAllCallBack?.onEnterSmallWidget(mOriginUrl, this)
-  }
-
-  override fun showSmallVideo(size: Point?, actionBar: Boolean, statusBar: Boolean): GSYBaseVideoPlayer {
-    return super.showSmallVideo(size, actionBar, statusBar)
-  }
-
-  override fun hideSmallVideo() {
-    super.hideSmallVideo()
   }
 
   @SuppressLint("ClickableViewAccessibility")

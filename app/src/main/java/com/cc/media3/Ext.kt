@@ -8,7 +8,6 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
 
 /**
- * Author:XX
  * Date:2024/12/20
  * Time:21:59
  */
