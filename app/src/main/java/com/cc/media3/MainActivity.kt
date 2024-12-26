@@ -1,6 +1,7 @@
 package com.cc.media3
 
 import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
 import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
@@ -118,14 +119,19 @@ class MainActivity : FragmentActivity() {
         }
       }
     }
-    binding.flVideoView.layoutParams.height = (9f / 16 * Resources.getSystem().displayMetrics.widthPixels).toInt()
     mVideoPlayer = when ((Math.random() * 100 + 1).toInt() % 4) {
       1 -> MyGsyLivePlayer(this) //自定义效果
       2 -> MyGsyVideoPlayer(this) //自定义效果
       3 -> MyGsyWebPlayer(this) //自定义效果
       else -> NormalGSYVideoPlayer(this) //原始效果
     }
+    if (mVideoPlayer is MyGsyPlayer) {
+      binding.flVideoView.layoutParams.height = (9f / 16 * Resources.getSystem().displayMetrics.widthPixels).toInt()
+    } else {
+      binding.flVideoView.layoutParams.height = -1
+    }
     binding.tvEnter.visibility = if (mVideoPlayer is MyGsyPlayer) View.VISIBLE else View.GONE
+    binding.vHolder.visibility = if (mVideoPlayer is MyGsyPlayer) View.VISIBLE else View.GONE
     mVideoPlayer?.setVideoAllCallBack(object : GSYSampleCallBack() {
       override fun onEnterSmallWidget(url: String?, vararg objects: Any?) {
         super.onEnterSmallWidget(url, *objects)
@@ -186,7 +192,7 @@ class MainActivity : FragmentActivity() {
   @Suppress("OVERRIDE_DEPRECATION")
   override fun onBackPressed() {
     val t = mVideoPlayer
-    if (t is NormalGSYVideoPlayer && t.isIfCurrentIsFullscreen) {
+    if (t is NormalGSYVideoPlayer && mOrientationUtils?.screenType == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
       t.fullscreenButton?.performClick()
       return
     } else if (t is MyGsyPlayer && t.onBackPressed()) {
