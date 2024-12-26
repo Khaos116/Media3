@@ -3,6 +3,7 @@ agp = "8.5.2"
 kotlin = "1.9.0"
 
 [libraries]
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version = "2.2.0" }
 #https://github.com/CarGuo/GSYVideoPlayer
 third-gsyvideoplayer-java = { group = "com.github.CarGuo.GSYVideoPlayer", name = "gsyvideoplayer-java", version = "v10.0.0" }
 third-gsyvideoplayer-exo2 = { group = "com.github.CarGuo.GSYVideoPlayer", name = "gsyvideoplayer-exo2", version = "v10.0.0" }

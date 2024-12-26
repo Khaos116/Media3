@@ -75,6 +75,7 @@ android {
 }
 
 dependencies {
+  implementation(libs.androidx.constraintlayout)
   implementation(libs.third.gsyvideoplayer.java)
   implementation(libs.third.gsyvideoplayer.exo2)
 }
