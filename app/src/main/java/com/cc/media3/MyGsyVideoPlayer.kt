@@ -60,7 +60,7 @@ class MyGsyVideoPlayer : MyGsyPlayer {
     mStartButton2?.setOnClickListener { mStartButton?.performClick() }
     mTvSpeed?.setOnClickListener { mViewChangeSpeed?.visibility = View.VISIBLE }
     //无信号
-    mViewNoSignal = findViewById(R.id.rlNoSignal)
+    mViewNoSignal = findViewById(R.id.clNoSignal)
     mTvRefreshNoSignal = findViewById(R.id.tvRefreshLive)
     mTvRefreshNoSignal?.setOnClickListener {
       mViewNoSignal?.visibility = View.GONE
