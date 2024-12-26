@@ -72,7 +72,7 @@ class MyGsyVideoPlayer : MyGsyPlayer {
       (context as? Activity)?.onBackPressed()
     }
     //播放速度选择
-    mViewChangeSpeed = findViewById(R.id.llSpeedChange)
+    mViewChangeSpeed = findViewById(R.id.clSpeedChange)
     mChangeSpeedParent = findViewById(R.id.llSpeed)
     mViewChangeSpeed?.setOnClickListener {
       mViewChangeSpeed?.visibility = View.GONE
