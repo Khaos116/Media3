@@ -128,7 +128,14 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
 
   //<editor-fold defaultstate="collapsed" desc="进入全屏和退出全屏处理">
   private var mFullBeforeParent: ViewGroup? = null
+  private var isLayoutFullscreen: Boolean? = null
+  private var isLightStatusBar: Boolean? = null
   protected fun startMyWindowFullscreen() {
+    (mContext as? Activity)?.window?.let { w ->
+      isLayoutFullscreen = w.decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN != 0
+      // 检查状态栏颜色是否为浅色
+      isLightStatusBar = androidx.core.graphics.ColorUtils.calculateLuminance(w.statusBarColor) <= 0.5 // 根据需要调整阈值
+    }
     mFullBeforeParent = this.parent as? ViewGroup
     viewGroup?.findViewById<View>(fullId)?.removeParent()
     viewGroup.addView(FrameLayout(mContext).also { fl ->
@@ -137,7 +144,7 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
       this.mIfCurrentIsFullscreen = true
       this.id = fullId
       fl.addView(this, ViewGroup.LayoutParams(-1, -1))
-      CommonUtil.hideSupportActionBar(context, true, true)
+      CommonUtil.hideSupportActionBar(context, false, true)
       CommonUtil.hideNavKey(context)
       resolveFullVideoShow(context, this, fl)
       mOrientationUtils?.resolveByClick() //横竖屏切换
@@ -155,13 +162,31 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
     this.mIfCurrentIsFullscreen = false
     this.id = NO_ID
     mFullBeforeParent?.addView(this, ViewGroup.LayoutParams(-1, -1))
-    CommonUtil.showSupportActionBar(context, true, true)
-    CommonUtil.showNavKey(context, View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
+    CommonUtil.showSupportActionBar(context, false, true)
+    isLayoutFullscreen?.let {
+      if (it) {
+        CommonUtil.showNavKey(context, View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+      } else {
+        CommonUtil.showNavKey(context, View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
+      }
+    }
+    isLightStatusBar?.let { lightStatusBar ->
+      val activity = mContext as? Activity
+      activity?.window?.decorView?.let { decorView ->
+        decorView.systemUiVisibility = if (lightStatusBar) {
+          decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        } else {
+          decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+        }
+      }
+    }
     mOrientationUtils?.resolveByClick() //横竖屏切换
     changeBottomHeight(false)
     cancelDismissControlViewTimer()
     startDismissControlViewTimer()
     mVideoAllCallBack?.onQuitFullscreen(mOriginUrl, this)
+    isLayoutFullscreen = null
+    isLightStatusBar = null
   }
   //</editor-fold>
 
@@ -257,5 +282,9 @@ open class MyGsyPlayer : StandardGSYVideoPlayer, LifecycleEventObserver {
     }
     return false
   }
+  //</editor-fold>
+
+  //<editor-fold defaultstate="collapsed" desc="获取当前播放地址">
+  open fun getCurrentUrl(): String? = mOriginUrl
   //</editor-fold>
 }
