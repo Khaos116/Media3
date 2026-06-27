@@ -53,6 +53,7 @@ class MainActivity : FragmentActivity() {
     )
   )
   private val mUrls = mutableListOf(
+    "M3U8测试" to "https://live2.jxa76.com/live/sd-6MvZ6BDhJQmD9yECvo.m3u8?txSecret=f6ce64aba1ebebcebfeb7a3428de6f2b&txTime=19F084A629B",
     "问题视频推流" to "https://us2.linkvlc.shop/GO2?token=RS13",
     "RTMP推流" to "rtmp://f13h.mine.nu/sat/tv071", //台视 https://github.com/suxuang/myIPTV/blob/main/ipv6.m3u
     "RTSP推流" to "rtsp://211.132.61.124/axis-media/media.amp", //日本千叶县旭市 https://github.com/mpromonet/webrtc-streamer/blob/master/config.json
@@ -74,7 +75,7 @@ class MainActivity : FragmentActivity() {
     setContentView(binding.root)
     setStatusColor()
     //EXOPlayer内核，支持格式更多
-    PlayerFactory.setPlayManager(Exo2PlayerManager::class.java)
+    PlayerFactory.setPlayManager(MyExoPlayerManager::class.java)
     CacheFactory.setCacheManager(ExoPlayerCacheManager::class.java)
     ExoSourceManager.setExoMediaSourceInterceptListener(object : ExoMediaSourceInterceptListener {
       override fun getMediaSource(dataSource: String?, preview: Boolean, cacheEnable: Boolean, isLooping: Boolean, cacheDir: File?): MediaSource? {
